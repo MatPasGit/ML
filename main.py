@@ -54,16 +54,6 @@ import numpy as np
 # #set_printoptions(precision=3)
 # #print("Wyniki dla chi2\n")
 # #print(fit.scores_)
-
-#DECISION TREE
-    read = pd.read_csv("datasets/credit_risk/original.csv")
-    print(read.head())
-    klasyfikator= DecisionTreeClassifier(criterion="entropy")
-    X = read.drop('default', axis = 1)
-    y = read['default']
-    np.where(y.values >= np.finfo(y.float64).max)
-    print(y)
-    klasyfikator.fit(X = X, y = y)
 # from scipy.stats import ttest_ind
 # from tabulate import tabulate
 
@@ -196,3 +186,15 @@ import numpy as np
 
 
 #NOWY PROGRAM
+#DECISION TREE
+def main():
+    read = pd.read_csv("datasets/credit_risk/original.csv")
+    print(read.head())
+    klasyfikator= DecisionTreeClassifier(criterion="entropy")
+    X = read.drop('default', axis = 1)
+    y = read['default']
+    np.where(y.values >= np.finfo(y.float64).max)
+    print(y)
+    klasyfikator.fit(X = X, y = y)
+
+main()
