@@ -67,7 +67,6 @@
 # #set_printoptions(precision=3)
 # #print("Wyniki dla chi2\n")
 # #print(fit.scores_)
-
 # from scipy.stats import ttest_ind
 # from tabulate import tabulate
 
