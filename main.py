@@ -33,35 +33,58 @@ n_repeats = 5
 
 rskf = RepeatedStratifiedKFold(n_splits=n_splits, n_repeats=n_repeats, random_state=1234)
 
-#Sieć neuronowa jako klasifykator
-network = MLPClassifier(hidden_layer_sizes=200, momentum=0, random_state=1234)
+ensamble_methods = ["bagging", "adaboost", "random subspace"]
+combination_methods = ["majority", "weighted", "Bordy"]
+number_of_classificators = [5, 10, 15]
+basic_classificators = ["SVM", "Decision tree"]
 
-scores=[]
-firstScore = True
-confusionMatrixMean = []
+for ensamble_method in ensamble_methods:
+    for combination_method in combination_methods:
+        for number_of_classificator in number_of_classificators:
+            for basic_classificator in basic_classificators:
 
-for train_index, test_index in rskf.split(X, y):
-         x_train, x_test = X[train_index], X[test_index]
-         y_train, y_test = y[train_index], y[test_index]
+                #Przykładowy programik
+                #Sieć neuronowa jako klasyfikator
+                network = MLPClassifier(hidden_layer_sizes=10, momentum=0, random_state=1234)
 
-         network.fit(x_train, y_train)
-         predict = network.predict(x_test)
-         score = accuracy_score(y_test, predict)
-         scores.append(score)            # Wypisanie wyniku
+                scores=[]
+                firstScore = True
 
-mean_score = np.mean(scores)
-std_score = np.std(scores)
-print(f"\nSrednia accuracy: {mean_score}\nOdchylenie: {std_score}\n")
+                for train_index, test_index in rskf.split(X, y):
+                        x_train, x_test = X[train_index], X[test_index]
+                        y_train, y_test = y[train_index], y[test_index]
+
+                        network.fit(x_train, y_train)
+                        predict = network.predict(x_test)
+                        score = accuracy_score(y_test, predict)
+                        scores.append(score)
+
+                mean_score = np.mean(scores)
+                std_score = np.std(scores)
+                print(f"\nSrednia accuracy: {mean_score}\nOdchylenie: {std_score}\n")
+
+                #Na początek inicjalizacja klasyfikatora w podanej liczbie
+
+                #Potem zastowowanie metody zespołowej przy dostarczaniu danych
+
+                #Klasyfikatory mielą
+
+                #Decydowanie o ostatecznym wyniku działania funkcji (metoda kombinacji)
+
+#A na koniec wynii, wykresy i testy statystyczne
+
 
 
 
 #TODO:
 #KOD MA BYĆ JEDNĄ PŁYNNĄ ŚCIANĄ TEKSTU, BEZ ODRĘBNYCH PLIKÓW, KLAS I FUNKCJI !!!!
 # 1.zmiana zestawów danych na pojedyncze pliki, wszystkie rekordy muszą być kompletne!!!!, ostatnia kolumna to klasa
-# 2.implementacja 1. metody zespołowej - baggingu
+
+# 2.implementacja 1. metody zespołowej - baggingu     (from sklearn.ensemble import BaggingClassifier  ; model = BaggingClassifier())
 # 3.implementacja 2. metody zespołowej - adaboostu
 # 4.implementacja 3. metody zespołowej - random subspace
-# 5.implementacja 1. metody kombinacji - głosowanie większościowe
+
+# 5.implementacja 1. metody kombinacji - głosowanie większościowe   (sklearn.ensemble.VotingClassifier?)
 # 6.implementacja 2. metody kombinacji - głosowanie ważone
 # 7.implementacja 3. metody kombinacji - metoda Bordy
 
@@ -71,6 +94,10 @@ print(f"\nSrednia accuracy: {mean_score}\nOdchylenie: {std_score}\n")
 
 # 10. implementacja testów statystycznych t-Studenta
 # 11. implementacja testów statystycznych Wilcoxona
+
+
+
+
 
 
 #     #DECISION TREE
