@@ -1,22 +1,9 @@
+from scipy import *
+import pandas as pd
+from sklearn import *
+from sklearn.tree import DecisionTreeClassifier
+import numpy as np
 #Program z ML
-
-#MATIEGO ŁADNE 
-
-#from scipy import *
-#import pandas as pd
-#from sklearn import *
-#from sklearn.tree import DecisionTreeClassifier
-#import numpy as np
-
-# #DECISION TREE
-#     read = pd.read_csv("datasets/credit_risk/original.csv")
-#     print(read.head())
-#     klasyfikator= DecisionTreeClassifier(criterion="entropy")
-#     X = read.drop('default', axis = 1)
-#     y = read['default']
-#     np.where(y.values >= np.finfo(y.float64).max)
-#     print(y)
-#     klasyfikator.fit(X = X, y = y)
 
 
 #STARY PROGRAM Z I STOPNIA
@@ -83,7 +70,7 @@
 # def neuronnetwork(X, y, alfa, neurons, splits, repeats, actualFeatures, numberOfFeatures):
 
 #     global bestScore, AllScores
-#     cross = RepeatedStratifiedKFold(n_splits=splits, n_repeats=repeats, random_state=87654321)    # 5 powtorzen 2-krotnej walidacja krzyżowa           
+#     cross = RepeatedStratifiedKFold(n_splits=splits, n_repeats=repeats, random_state=87654321)    # 5 powtorzen 2-krotnej walidacja krzyżowa
 #     network = MLPClassifier(hidden_layer_sizes=neurons, momentum=alfa, random_state=87654321)     # Inicjalizacja modelu sieci neuronowej
 #     scores=[]
 #     firstScore = True
@@ -92,8 +79,8 @@
 #         x_train, x_test = X[train_index], X[test_index]
 #         y_train, y_test = y[train_index], y[test_index]
 
-#         network.fit(x_train, y_train)                                   
-#         predict = network.predict(x_test)                               
+#         network.fit(x_train, y_train)
+#         predict = network.predict(x_test)
 #         score = accuracy_score(y_test, predict)
 #         confusionMatrix = confusion_matrix(y_test,predict)
 #         scores.append(score)            # Wypisanie wyniku
@@ -114,7 +101,7 @@
 #     if bestScore[4] < mean_score:
 #         bestScore= [neurons, alfa, numberOfFeatures, actualFeatures, mean_score, std_score, confusionMatrixMean]
 
-    
+
 
 # neurons = [200, 250, 300]        # Liczby neuronów w warstwie ukrytej (50, 100, 150)
 # momentum = [0, 0.9]             # Wartości współczynnika momentu (0 - momentum nieaktywne; 0,9- najpopularniejsza wartość momentum)
@@ -139,7 +126,7 @@
 #     names_column.append(temporalArray)
 # names_column = np.array(names_column)
 
-# #Tworzenie wykresu 
+# #Tworzenie wykresu
 # p = figure(title="Wyniki eksperymentu dla liczby cech równej "+str(maxNumberOfFeatures), tools=TOOLS, plot_width=1200)
 # p.xaxis.axis_label = "Liczba cech"
 # p.yaxis.axis_label = "Wynik"
@@ -158,7 +145,7 @@
 #             print("Cechy: "+str(actualFeatures))
 #             print("Liczba neuronow:"+str(neuron)+", wartosc momentu:"+str(alfa)+", liczba cech:"+str(numberOfFeatures))
 #             neuronnetwork(X[:, actualFeatures], y, alfa, neuron, splits, repeats, actualFeatures, numberOfFeatures)
-        
+
 #         p.line(arrayOfFeatures, scoresToPlot, legend_label="Liczba neuronow:"+str(neuron)+", wartosc momentu:"+str(alfa), color=colors[colorNumber])
 #         colorNumber +=1
 #         # Statystyka - testy parowe
@@ -167,12 +154,12 @@
 #         alfa = 0.05
 #         t_statistic = np.zeros((maxNumberOfFeatures,maxNumberOfFeatures))
 #         p_value = np.zeros((maxNumberOfFeatures,maxNumberOfFeatures))
-        
+
 #         for i in range(maxNumberOfFeatures):
 #             for j in range(maxNumberOfFeatures):
 #                 t_statistic[i, j], p_value[i, j] = ttest_ind(allScores[i], allScores[j])
 
-    
+
 #         t_statistic_table = np.concatenate((names_column, t_statistic), axis=1)
 #         t_statistic_table = tabulate(t_statistic_table, headers, floatfmt=".2f")
 #         p_value_table = np.concatenate((names_column, p_value), axis=1)
@@ -198,10 +185,40 @@
 #show(p)
 
 
+#NOWY PROGRAM
+#DECISION TREE
+def main():
+
+    read = pd.read_csv("datasets/credit_risk/original.csv")
+    #WALIDACJA KRZYŻOWA
+    kf = KFold(n_splits=2, random_state=None, shuffle=False)
+    kf.get_n_splits(read)
+    print(kf)
+
+
+
+
+    #DECISION TREE
+
+    DDclassifier= DecisionTreeClassifier(criterion="entropy")
+    X = read.drop('default', axis = 1)
+    y = read['default']
+    np.where(y.values >= np.finfo(y.float64).max)
+    print(y)
+    DDclassifier.fit(X = X, y = y)
+
+    #SVM KLASYFIKATOR
+    SVMClassifier= svm.LinearSVC() ##Liniowy kernel Maszyny wektorów nośnych
+    SVMClassifier.fit(X,y)
+
+
+main()
+
+
 #PROGRAM PRZYKŁADOWY
 
 from sklearn.metrics import accuracy_score
-from sklearn.model_selection import RepeatedStratifiedKFold
+from sklearn.model_selection import RepeatedStratifiedKFold, KFold
 from sklearn.naive_bayes import GaussianNB
 import numpy as np
 from sklearn.ensemble import BaseEnsemble
@@ -282,7 +299,7 @@ class RandomSubspaceEnsemble(BaseEnsemble, ClassifierMixin):
                 prediction = np.argmax(average_support, axis=1)
                 # Zwrocenie predykcji calego zespolu
                 return self.classes_[prediction]
-        
+
         def ensemble_support_matrix(self, X):
             # Wyliczenie macierzy wsparcia
             probas_ = []
