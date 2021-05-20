@@ -1,10 +1,9 @@
-from tabulate import tabulate
+
 from scipy.stats import ttest_ind
 import numpy as np
 from numpy import set_printoptions
 from scipy import *
 import pandas as pd
-import matplotlib
 import matplotlib.pyplot as plt
 from sklearn import *
 from sklearn.tree import DecisionTreeClassifier
@@ -13,7 +12,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import confusion_matrix, accuracy_score 
 from sklearn.utils.validation import check_array, check_is_fitted, check_X_y
 from sklearn.base import ClassifierMixin, clone
-from sklearn.ensemble import BaseEnsemble
+from sklearn.ensemble import BaseEnsemble, BaggingClassifier, AdaBoostClassifier, VotingClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import RepeatedStratifiedKFold, KFold
 
@@ -26,7 +25,8 @@ dataset = np.genfromtxt("datasets/%s" % (dataset), delimiter=",")
 
 X = dataset[1:, :-1]
 y = dataset[1:, -1].astype(int)
-
+print(X)
+print(y)
 #Walidacja krzyżowa (5 powtórzeń 2-krotnej walidacji krzyżowej)
 n_splits = 2
 n_repeats = 5
@@ -38,15 +38,35 @@ combination_methods = ["majority", "weighted", "Bordy"]
 number_of_classificators = [5, 10, 15]
 basic_classificators = ["SVM", "Decision tree"]
 
+classifier = None
+method = None
+number = 0
+combination = None
 for ensamble_method in ensamble_methods:
     for combination_method in combination_methods:
         for number_of_classificator in number_of_classificators:
             for basic_classificator in basic_classificators:
 
-                #Przykładowy programik
-                #Sieć neuronowa jako klasyfikator
-                network = MLPClassifier(hidden_layer_sizes=10, momentum=0, random_state=1234)
+                #klasyfikator
 
+                if basic_classificator == "SVM":
+                    classifier = svm.LinearSVC()  ##Liniowy kernel Maszyny wektorów nośnych
+                else:
+                    classifier = DecisionTreeClassifier(criterion="entropy")
+                if combination_method == "majority":
+                    combination = VotingClassifier()
+                if combination_method == "weighted":
+                    combination = VotingClassifier(weights=[1,2,3,1,2])
+                if combination_method == "Bordy":
+
+                if ensamble_method == "bagging":
+                    method = BaggingClassifier(base_estimator=classifier, n_estimators=number_of_classificator, random_state=0)
+                if ensamble_method == "adaboost":
+                    method = AdaBoostClassifier(base_estimator=classifier, n_estimators=number_of_classificator, random_state=0)
+                if ensamble_method == "random subspace":
+                    method = BaggingClassifier(base_estimator=classifier, n_estimators=number_of_classificator,bootstrap=False, max_features=10)
+
+                method.fit(X, y)
                 scores=[]
                 firstScore = True
 
@@ -54,14 +74,17 @@ for ensamble_method in ensamble_methods:
                         x_train, x_test = X[train_index], X[test_index]
                         y_train, y_test = y[train_index], y[test_index]
 
-                        network.fit(x_train, y_train)
-                        predict = network.predict(x_test)
+                        classifier.fit(x_train, y_train)
+                        predict = classifier.predict(x_test)
                         score = accuracy_score(y_test, predict)
                         scores.append(score)
 
                 mean_score = np.mean(scores)
                 std_score = np.std(scores)
                 print(f"\nSrednia accuracy: {mean_score}\nOdchylenie: {std_score}\n")
+
+
+
 
                 #Na początek inicjalizacja klasyfikatora w podanej liczbie
 
