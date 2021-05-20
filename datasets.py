@@ -20,4 +20,12 @@ def dataset_stroke():
 
     return df
 
-dataset_stroke()
+def australia_weather():
+    df = pd.read_csv("datasets/rain in austraila/weatherAUS.csv")
+    df['RainToday'].replace(["No", "Yes"], [0, 1], inplace=True)
+    df['RainTomorrow'].replace(["No", "Yes"], [0, 1], inplace=True)
+    print(df.nunique())
+    print(df.head())
+
+
+australia_weather()

@@ -51,13 +51,17 @@ for ensamble_method in ensamble_methods:
 
                 if basic_classificator == "SVM":
                     classifier = svm.LinearSVC()  ##Liniowy kernel Maszyny wektorów nośnych
+                    classifier.fit(X,y)
                 else:
                     classifier = DecisionTreeClassifier(criterion="entropy")
+                    classifier.fit(X,y)
+
                 if combination_method == "majority":
-                    combination = VotingClassifier()
+                    combination = VotingClassifier(estimators=classifier, voting='hard')
                 if combination_method == "weighted":
-                    combination = VotingClassifier(weights=[1,2,3,1,2])
+                    combination = VotingClassifier(estimators=classifier,weights=[1,2,3,1,2])
                 if combination_method == "Bordy":
+                    print("metoda do napisania :( ")
 
                 if ensamble_method == "bagging":
                     method = BaggingClassifier(base_estimator=classifier, n_estimators=number_of_classificator, random_state=0)
