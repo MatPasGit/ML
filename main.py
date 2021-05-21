@@ -1,6 +1,7 @@
-
 from scipy.stats import ttest_ind
 import numpy as np
+from numpy import mean
+from numpy import std
 from numpy import set_printoptions
 from scipy import *
 import pandas as pd
@@ -14,8 +15,7 @@ from sklearn.utils.validation import check_array, check_is_fitted, check_X_y
 from sklearn.base import ClassifierMixin, clone
 from sklearn.ensemble import BaseEnsemble, BaggingClassifier, AdaBoostClassifier, VotingClassifier
 from sklearn.naive_bayes import GaussianNB
-from sklearn.model_selection import RepeatedStratifiedKFold, KFold
-
+from sklearn.model_selection import RepeatedStratifiedKFold, KFold, cross_val_score
 
 #Pobranie zawartości zestawu danych
 
@@ -27,6 +27,7 @@ X = dataset[1:, :-1]
 y = dataset[1:, -1].astype(int)
 print(X)
 print(y)
+
 #Walidacja krzyżowa (5 powtórzeń 2-krotnej walidacji krzyżowej)
 n_splits = 2
 n_repeats = 5
@@ -37,6 +38,10 @@ ensamble_methods = ["bagging", "adaboost", "random subspace"]
 combination_methods = ["majority", "weighted", "Bordy"]
 number_of_classificators = [5, 10, 15]
 basic_classificators = ["SVM", "Decision tree"]
+classificators_weights = {
+    5: [1,2,3,2,1],
+    10: [1,2,3,2,1,1,2,3,2,1],
+    15: [1,2,3,2,1,1,2,3,2,1,1,2,3,2,1]}
 
 classifier = None
 method = None
@@ -47,45 +52,32 @@ for ensamble_method in ensamble_methods:
         for number_of_classificator in number_of_classificators:
             for basic_classificator in basic_classificators:
 
-                #klasyfikator
-
                 if basic_classificator == "SVM":
-                    classifier = svm.LinearSVC()  ##Liniowy kernel Maszyny wektorów nośnych
-                    classifier.fit(X,y)
+                    # Liniowy kernel Maszyny wektorów nośnych; wybieramy LinearSVC ponieważ dużo próbek i więcej niż 2 klasy w niektórych przypadkach; decision_function_shape='ovo'
+                    classifier = svm.LinearSVC(dual=False)
+                    #classifier = DecisionTreeClassifier()
                 else:
-                    classifier = DecisionTreeClassifier(criterion="entropy")
-                    classifier.fit(X,y)
+                    classifier = DecisionTreeClassifier()
 
                 if combination_method == "majority":
-                    combination = VotingClassifier(estimators=classifier, voting='hard')
+                    combination = VotingClassifier(estimators=classifier)
                 if combination_method == "weighted":
-                    combination = VotingClassifier(estimators=classifier,weights=[1,2,3,1,2])
+                    combination = VotingClassifier(estimators=classifier, weights=classificators_weights[number_of_classificator])
                 if combination_method == "Bordy":
-                    print("metoda do napisania :( ")
+                    combination = VotingClassifier(estimators=classifier, voting='soft')
 
                 if ensamble_method == "bagging":
-                    method = BaggingClassifier(base_estimator=classifier, n_estimators=number_of_classificator, random_state=0)
+                    method = BaggingClassifier(base_estimator=classifier, n_estimators=number_of_classificator, random_state=1234)
                 if ensamble_method == "adaboost":
-                    method = AdaBoostClassifier(base_estimator=classifier, n_estimators=number_of_classificator, random_state=0)
+                    method = AdaBoostClassifier(base_estimator=classifier, n_estimators=number_of_classificator, random_state=1234, algorithm='SAMME')
                 if ensamble_method == "random subspace":
-                    method = BaggingClassifier(base_estimator=classifier, n_estimators=number_of_classificator,bootstrap=False, max_features=10)
+                    method = BaggingClassifier(base_estimator=classifier, n_estimators=number_of_classificator, bootstrap=False, random_state=1234)
 
-                method.fit(X, y)
-                scores=[]
-                firstScore = True
+                scores = cross_val_score(method, X, y, scoring='accuracy', cv=rskf, n_jobs=-1)
 
-                for train_index, test_index in rskf.split(X, y):
-                        x_train, x_test = X[train_index], X[test_index]
-                        y_train, y_test = y[train_index], y[test_index]
+                print(f"\n{ensamble_method}, {combination_method}, {number_of_classificator}, {basic_classificator}")
+                print(f"\nSrednia accuracy: {np.mean(scores)}\nOdchylenie: {np.std(scores)}\n")
 
-                        classifier.fit(x_train, y_train)
-                        predict = classifier.predict(x_test)
-                        score = accuracy_score(y_test, predict)
-                        scores.append(score)
-
-                mean_score = np.mean(scores)
-                std_score = np.std(scores)
-                print(f"\nSrednia accuracy: {mean_score}\nOdchylenie: {std_score}\n")
 
 
 
@@ -98,7 +90,7 @@ for ensamble_method in ensamble_methods:
 
                 #Decydowanie o ostatecznym wyniku działania funkcji (metoda kombinacji)
 
-#A na koniec wynii, wykresy i testy statystyczne
+#A na koniec wyniki, wykresy i testy statystyczne
 
 
 
@@ -122,23 +114,6 @@ for ensamble_method in ensamble_methods:
 # 10. implementacja testów statystycznych t-Studenta
 # 11. implementacja testów statystycznych Wilcoxona
 
-
-
-
-
-
-#     #DECISION TREE
-
-#     DDclassifier= DecisionTreeClassifier(criterion="entropy")
-#     X = read.drop('default', axis = 1)
-#     y = read['default']
-#     np.where(y.values >= np.finfo(y.float64).max)
-#     print(y)
-#     DDclassifier.fit(X = X, y = y)
-
-#     #SVM KLASYFIKATOR
-#     SVMClassifier= svm.LinearSVC() ##Liniowy kernel Maszyny wektorów nośnych
-#     SVMClassifier.fit(X,y)
 
 
 
