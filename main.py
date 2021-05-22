@@ -703,3 +703,5 @@ for combination_method in combination_methods:
 # 10. implementacja testów statystycznych t-Studenta
 # 11. implementacja testów statystycznych Wilcoxona
 #A na koniec wyniki, wykresy i testy statystyczne
+#Posprzątać lekko kod
+#Zaimplementować walidację krzyżową
