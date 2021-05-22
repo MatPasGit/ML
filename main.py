@@ -39,19 +39,71 @@ combination_methods = ["majority", "weighted", "Bordy"]
 number_of_classificators = [5, 10, 15]
 basic_classificators = ["SVM", "Decision tree"]
 
-
-
-
-
-
-
-
-
-
-
-
-
 #BAGGING
+
+for combination_method in combination_methods:
+    for number_of_classificator in number_of_classificators:
+        for basic_classificator in basic_classificators:
+
+            if basic_classificator == "Decision tree":
+                print(f"{combination_method}, {number_of_classificator}, {basic_classificator}")
+
+                classificatorsList = list()
+
+                for i in range(number_of_classificator):                    
+                        classificatorsList.append(('classificator no.'+str(i+1), DecisionTreeClassifier()))
+                #print(classificatorsList)
+
+                X_train_full, X_test, y_train_full, y_test = train_test_split(X, y, test_size=0.50, random_state=1234)
+
+                scores = list()
+
+                for i in range(number_of_classificator):
+
+                    X_train, X_val, y_train, y_val = train_test_split(X_train_full, y_train_full, test_size=0.50, random_state=1234+i)
+                    # fit the model
+                    classificatorsList[i][1].fit(X_train, y_train)
+                    # evaluate the model
+                    yhat = classificatorsList[i][1].predict(X_val)
+                    acc = accuracy_score(y_val, yhat)
+                    # store the performance
+                    scores.append(acc)
+                    # report model performance
+
+                #print(scores)
+
+                if combination_method == "majority":
+                    ensemble = VotingClassifier(estimators=classificatorsList)
+                if combination_method == "weighted":
+                    ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
+                if combination_method == "Bordy":
+                    ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
+
+                ensemble.fit(X_train_full, y_train_full)
+                # make predictions on test set
+                yhat = ensemble.predict(X_test)
+                # evaluate predictions
+                score = accuracy_score(y_test, yhat)
+                print('Weighted Avg Accuracy: %.3f\n' % (score*100))
+                # evaluate each standalone model
+
+                for i in range(number_of_classificator):
+                    # fit the model
+                    classificatorsList[i][1].fit(X_train_full, y_train_full)
+                    # evaluate the model
+                    yhat = classificatorsList[i][1].predict(X_test)
+                    acc = accuracy_score(y_test, yhat)
+                    # store the performance
+                    scores.append(acc)
+                    # report model performance
+
+            elif basic_classificator == "SVM":
+                #classificatorsList.append(('classificator no.'+str(i+1), svm.LinearSVC(dual=False)))
+                print("Dalej")
+
+
+
+
 
 
 
