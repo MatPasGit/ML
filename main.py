@@ -553,22 +553,6 @@ for combination_method in combination_methods:
                     #ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
                     print("Brak metody z uwagi na brak odpowiedniej funkcji")
 
-stat,p = wilcoxon(bagging_acc_list_majority,adaboost_acc_list_majority )
-stat,p = wilcoxon(bagging_acc_list_weighted,adaboost_acc_list_weighted )
-stat,p = wilcoxon(bagging_acc_list_bordy,adaboost_acc_list_bordy )
-
-stat,p = wilcoxon(bagging_acc_list_majority,rf_acc_list_majority )
-stat,p = wilcoxon(bagging_acc_list_weighted,rf_acc_list_weighted )
-stat,p = wilcoxon(bagging_acc_list_bordy,rf_acc_list_bordy )
-
-stat,p = wilcoxon(adaboost_acc_list_majority,rf_acc_list_majority )
-stat,p = wilcoxon(adaboost_acc_list_weighted,rf_acc_list_weighted )
-stat,p = wilcoxon(adaboost_acc_list_bordy,rf_acc_list_bordy )
-
-
-
-
-
 # classificatorsList = list()
 
 # for i in range(3):
