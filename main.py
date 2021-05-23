@@ -19,6 +19,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import RepeatedStratifiedKFold, KFold, cross_val_score, train_test_split
 from nltk.classify import SklearnClassifier
 from sklearn.svm import SVC
+from scipy.stats import wilcoxon
 
 #Pobranie zawartości zestawu danych
 
@@ -31,6 +32,7 @@ y = dataset[1:, -1].astype(int)
 #print(X)
 #print(y)
 
+wilcoxonarray = []
 
 combination_methods = ["majority", "weighted", "Bordy"]
 number_of_classificators = [5, 10, 15]
@@ -45,6 +47,7 @@ for combination_method in combination_methods:
         for basic_classificator in basic_classificators:
 
             basicscores = []
+            subwilcoxon = []
             for cross_time in range(5):
                 for cross_page in range(2):
 
@@ -215,7 +218,8 @@ for combination_method in combination_methods:
                 print("Brak metody z uwagi na brak odpowiedniej funkcji")
             else:
                 print("Accuracy:" + str(np.mean(basicscores))+", std: "+str(np.std(basicscores)))
-
+                wilcoxonarray.append(basicscores.copy())
+            
 
 #ADABOOST
 
@@ -226,6 +230,7 @@ for combination_method in combination_methods:
         for basic_classificator in basic_classificators:
 
             basicscores = []
+            subwilcoxon = []
             for cross_time in range(5):
                 for cross_page in range(2):
 
@@ -429,6 +434,8 @@ for combination_method in combination_methods:
                 print("Brak metody z uwagi na brak odpowiedniej funkcji")
             else:
                 print("Accuracy:" + str(np.mean(basicscores))+", std: "+str(np.std(basicscores)))
+                wilcoxonarray.append(basicscores.copy())
+            
 
 #RANDOM SUBSPACE
 
@@ -439,6 +446,7 @@ for combination_method in combination_methods:
         for basic_classificator in basic_classificators:
 
             basicscores = []
+            subwilcoxon = []
             for cross_time in range(5):
                 for cross_page in range(2):
 
@@ -620,6 +628,70 @@ for combination_method in combination_methods:
                 print("Brak metody z uwagi na brak odpowiedniej funkcji")
             else:
                 print("Accuracy:" + str(np.mean(basicscores))+", std: "+str(np.std(basicscores)))
+                wilcoxonarray.append(basicscores.copy())
+            
+
+wilcoxonarraymean = []
+
+for j in range(3):
+    for i in range(15):
+        if i == 0:
+            wilcoxonarraymean.append(wilcoxonarray[j*15+i])
+        else:
+            wilcoxonarraymean[j] = np.concatenate([wilcoxonarraymean[j],wilcoxonarray[j*15+i]])
+
+wilcoxonStat = pd.DataFrame()
+
+for arrayOne in range(len(wilcoxonarraymean)):
+    for arraySecond in range(arrayOne+1):
+        if arrayOne != arraySecond:
+            stat, p = wilcoxon(wilcoxonarraymean[arrayOne], wilcoxonarraymean[arraySecond])
+            print('Statistics=%.3f, p=%.3f' % (stat, p))
+            alpha = 0.05
+            if p > alpha:
+                param_dict = {
+                    'arrayOne': arrayOne,
+                    'arratSecond': arraySecond,
+                    'stat': stat,
+                    'p': p,
+                    'wynik': "="
+                }
+                wilcoxonStat = wilcoxonStat.append(param_dict, ignore_index=True)
+            else:
+                param_dict = {
+                    'arrayOne': arrayOne,
+                    'arratSecond': arraySecond,
+                    'stat': stat,
+                    'p': p,
+                    'wynik': "!"
+                }
+                wilcoxonStat = wilcoxonStat.append(param_dict, ignore_index=True)
+        else:
+            param_dict = {
+                'arrayOne': arrayOne,
+                'arratSecond': arraySecond,
+                'stat': "-",
+                'p': "-",
+                'wynik': "-"
+            }
+            wilcoxonStat = wilcoxonStat.append(param_dict, ignore_index=True)
+
+print(wilcoxonStat)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # classifier = None
