@@ -28,17 +28,10 @@ dataset = np.genfromtxt("datasets/%s" % (dataset), delimiter=",")
 
 X = dataset[1:, :-1]
 y = dataset[1:, -1].astype(int)
-print(X)
-print(y)
+#print(X)
+#print(y)
 
 
-#Walidacja krzyżowa (5 powtórzeń 2-krotnej walidacji krzyżowej)
-#n_splits = 2
-#n_repeats = 5
-
-#rskf = RepeatedStratifiedKFold(n_splits=n_splits, n_repeats=n_repeats, random_state=1234)
-
-#ensamble_methods = ["bagging", "adaboost", "random subspace"]
 combination_methods = ["majority", "weighted", "Bordy"]
 number_of_classificators = [5, 10, 15]
 basic_classificators = ["SVM", "Decision tree"]
@@ -51,155 +44,177 @@ for combination_method in combination_methods:
     for number_of_classificator in number_of_classificators:
         for basic_classificator in basic_classificators:
 
-            if basic_classificator == "Decision tree":
-                print(f"{combination_method}, {number_of_classificator}, {basic_classificator}")
+            basicscores = []
+            for cross_time in range(5):
+                for cross_page in range(2):
 
-                classificatorsList = list()
+                    if basic_classificator == "Decision tree":
+                        
+                        classificatorsList = list()
 
-                for i in range(number_of_classificator):                    
-                        classificatorsList.append(('classificator no.'+str(i+1), DecisionTreeClassifier()))
-                #print(classificatorsList)
+                        for i in range(number_of_classificator):                    
+                                classificatorsList.append(('classificator no.'+str(i+1), DecisionTreeClassifier()))
+                        #print(classificatorsList)
+                       
+                        X_train_full, X_test, y_train_full, y_test = train_test_split(X, y, test_size=0.50, random_state=1234+cross_time)
+                        if cross_page == 1:
+                            temp = X_train_full
+                            X_train_full = X_test
+                            X_test = temp
 
-                X_train_full, X_test, y_train_full, y_test = train_test_split(X, y, test_size=0.50, random_state=1234)
+                            temp = y_train_full
+                            y_train_full = y_test
+                            y_test = temp
 
-                scores = list()
+                        scores = list()
 
-                for i in range(number_of_classificator):
+                        for i in range(number_of_classificator):
 
-                    X_train, X_val, y_train, y_val = train_test_split(X_train_full, y_train_full, test_size=0.50, random_state=1234+i)
-                    # fit the model
-                    classificatorsList[i][1].fit(X_train, y_train)
-                    # evaluate the model
-                    yhat = classificatorsList[i][1].predict(X_val)
-                    acc = accuracy_score(y_val, yhat)
-                    # store the performance
-                    scores.append(acc)
-                    # report model performance
+                            X_train, X_val, y_train, y_val = train_test_split(X_train_full, y_train_full, test_size=0.50, random_state=1234+i)
+                            # fit the model
+                            classificatorsList[i][1].fit(X_train, y_train)
+                            # evaluate the model
+                            yhat = classificatorsList[i][1].predict(X_val)
+                            acc = accuracy_score(y_val, yhat)
+                            # store the performance
+                            scores.append(acc)
+                            # report model performance
 
-                #print(scores)
+                        #print(scores)
 
-                if combination_method == "majority":
-                    #ensemble = VotingClassifier(estimators=classificatorsList)
-                    predictionArray = []
-                    for i in range(number_of_classificator):
-                        predictionArray.append(classificatorsList[i][1].predict(X_test))
-                    prediction = np.array(predictionArray)
-                    prediction = np.apply_along_axis(lambda x: np.argmax(np.bincount(x)), axis=1, arr=prediction.T)
-                    score = accuracy_score(y_test, prediction)
-                    print('Weighted Avg Accuracy: %.3f\n' % (score*100))
+                        if combination_method == "majority":
+                            #ensemble = VotingClassifier(estimators=classificatorsList)
+                            predictionArray = []
+                            for i in range(number_of_classificator):
+                                predictionArray.append(classificatorsList[i][1].predict(X_test))
+                            prediction = np.array(predictionArray)
+                            prediction = np.apply_along_axis(lambda x: np.argmax(np.bincount(x)), axis=1, arr=prediction.T)
+                            score = accuracy_score(y_test, prediction)
+                            basicscores.append(score)
 
-                if combination_method == "weighted":
-                    #ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
-                    predictionArray = []
-                    for i in range(number_of_classificator):
-                        predictionArray.append(classificatorsList[i][1].predict(X_test))
-                    
-                    weightArray = []
-                    for i in set(y):
-                        weightArray.append([i,0])
+                        if combination_method == "weighted":
+                            #ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
+                            predictionArray = []
+                            for i in range(number_of_classificator):
+                                predictionArray.append(classificatorsList[i][1].predict(X_test))
+                            
+                            weightArray = []
+                            for i in set(y):
+                                weightArray.append([i,0])
 
-                    prediction=[]
-                    for j in range(len(predictionArray[0])):
-                        for i in range(len(predictionArray)):
-                            for k in weightArray:
-                                if (k[0] == predictionArray[i][j]):
-                                    k[1] += scores[i]
-                        maxvalue = 0
-                        maxclass = 0
-                        for k in weightArray:
-                            if k[1] > maxvalue:
-                                maxclass = k[0]
-                            k[1] = 0
-                        prediction.append(maxclass)
-                    score = accuracy_score(y_test, prediction)
-                    print('Weighted Avg Accuracy: %.3f\n' % (score*100))
+                            prediction=[]
+                            for j in range(len(predictionArray[0])):
+                                for i in range(len(predictionArray)):
+                                    for k in weightArray:
+                                        if (k[0] == predictionArray[i][j]):
+                                            k[1] += scores[i]
+                                maxvalue = 0
+                                maxclass = 0
+                                for k in weightArray:
+                                    if k[1] > maxvalue:
+                                        maxclass = k[0]
+                                    k[1] = 0
+                                prediction.append(maxclass)
+                            score = accuracy_score(y_test, prediction)
+                            basicscores.append(score)
 
-                if combination_method == "Bordy": #Głosowanie miękkie za pomoca wektorów wsparcia
-                    #ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
-                    predictionArray = []
-                    for i in range(number_of_classificator):
-                        predictionArray.append(classificatorsList[i][1].predict_proba(X_test))
-                    esm = np.array(predictionArray)
-                    # Wyliczenie sredniej wartosci wsparcia
-                    average_support = np.mean(esm, axis=0)
-                    # Wskazanie etykiet
-                    prediction = np.argmax(average_support, axis=1)
-                    score = accuracy_score(y_test, prediction)
-                    print('Weighted Avg Accuracy: %.3f\n' % (score*100))
+                        if combination_method == "Bordy": #Głosowanie miękkie za pomoca wektorów wsparcia
+                            #ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
+                            predictionArray = []
+                            for i in range(number_of_classificator):
+                                predictionArray.append(classificatorsList[i][1].predict_proba(X_test))
+                            esm = np.array(predictionArray)
+                            # Wyliczenie sredniej wartosci wsparcia
+                            average_support = np.mean(esm, axis=0)
+                            # Wskazanie etykiet
+                            prediction = np.argmax(average_support, axis=1)
+                            score = accuracy_score(y_test, prediction)
+                            basicscores.append(score)
 
-            elif basic_classificator == "SVM":
+                    elif basic_classificator == "SVM":
 
-                print(f"{combination_method}, {number_of_classificator}, {basic_classificator}")
+                        classificatorsList = list()
 
-                classificatorsList = list()
+                        for i in range(number_of_classificator):
+                            classificatorsList.append(
+                                ('classificator no.'+str(i+1), svm.LinearSVC(dual=False)))
+                        #print(classificatorsList)
 
-                for i in range(number_of_classificator):
-                    classificatorsList.append(
-                        ('classificator no.'+str(i+1), svm.LinearSVC(dual=False)))
-                #print(classificatorsList)
+                        X_train_full, X_test, y_train_full, y_test = train_test_split(X, y, test_size=0.50, random_state=1234+cross_time)
+                        if cross_page == 1:
+                            temp = X_train_full
+                            X_train_full = X_test
+                            X_test = temp
 
-                X_train_full, X_test, y_train_full, y_test = train_test_split(
-                    X, y, test_size=0.50, random_state=1234)
+                            temp = y_train_full
+                            y_train_full = y_test
+                            y_test = temp
 
-                scores = list()
+                        scores = list()
 
-                for i in range(number_of_classificator):
+                        for i in range(number_of_classificator):
 
-                    X_train, X_val, y_train, y_val = train_test_split(
-                        X_train_full, y_train_full, test_size=0.50, random_state=1234+i)
-                    # fit the model
-                    classificatorsList[i][1].fit(X_train, y_train)
-                    # evaluate the model
-                    yhat = classificatorsList[i][1].predict(X_val)
-                    acc = accuracy_score(y_val, yhat)
-                    # store the performance
-                    scores.append(acc)
-                    # report model performance
+                            X_train, X_val, y_train, y_val = train_test_split(
+                                X_train_full, y_train_full, test_size=0.50, random_state=1234+i+cross_time*20)
+                            # fit the model
+                            classificatorsList[i][1].fit(X_train, y_train)
+                            # evaluate the model
+                            yhat = classificatorsList[i][1].predict(X_val)
+                            acc = accuracy_score(y_val, yhat)
+                            # store the performance
+                            scores.append(acc)
+                            # report model performance
 
-                #print(scores)
+                        #print(scores)
 
-                if combination_method == "majority":
-                    #ensemble = VotingClassifier(estimators=classificatorsList)
-                    predictionArray = []
-                    for i in range(number_of_classificator):
-                        predictionArray.append(
-                            classificatorsList[i][1].predict(X_test))
-                    prediction = np.array(predictionArray)
-                    prediction = np.apply_along_axis(lambda x: np.argmax(
-                        np.bincount(x)), axis=1, arr=prediction.T)
-                    score = accuracy_score(y_test, prediction)
-                    print('Weighted Avg Accuracy: %.3f\n' % (score*100))
+                        if combination_method == "majority":
+                            #ensemble = VotingClassifier(estimators=classificatorsList)
+                            predictionArray = []
+                            for i in range(number_of_classificator):
+                                predictionArray.append(
+                                    classificatorsList[i][1].predict(X_test))
+                            prediction = np.array(predictionArray)
+                            prediction = np.apply_along_axis(lambda x: np.argmax(
+                                np.bincount(x)), axis=1, arr=prediction.T)
+                            score = accuracy_score(y_test, prediction)
+                            basicscores.append(score)
 
-                if combination_method == "weighted":
-                    #ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
-                    predictionArray = []
-                    for i in range(number_of_classificator):
-                        predictionArray.append(
-                            classificatorsList[i][1].predict(X_test))
+                        if combination_method == "weighted":
+                            #ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
+                            predictionArray = []
+                            for i in range(number_of_classificator):
+                                predictionArray.append(
+                                    classificatorsList[i][1].predict(X_test))
 
-                    weightArray = []
-                    for i in set(y):
-                        weightArray.append([i, 0])
+                            weightArray = []
+                            for i in set(y):
+                                weightArray.append([i, 0])
 
-                    prediction = []
-                    for j in range(len(predictionArray[0])):
-                        for i in range(len(predictionArray)):
-                            for k in weightArray:
-                                if (k[0] == predictionArray[i][j]):
-                                    k[1] += scores[i]
-                        maxvalue = 0
-                        maxclass = 0
-                        for k in weightArray:
-                            if k[1] > maxvalue:
-                                maxclass = k[0]
-                            k[1] = 0
-                        prediction.append(maxclass)
-                    score = accuracy_score(y_test, prediction)
-                    print('Weighted Avg Accuracy: %.3f\n' % (score*100))
+                            prediction = []
+                            for j in range(len(predictionArray[0])):
+                                for i in range(len(predictionArray)):
+                                    for k in weightArray:
+                                        if (k[0] == predictionArray[i][j]):
+                                            k[1] += scores[i]
+                                maxvalue = 0
+                                maxclass = 0
+                                for k in weightArray:
+                                    if k[1] > maxvalue:
+                                        maxclass = k[0]
+                                    k[1] = 0
+                                prediction.append(maxclass)
+                            score = accuracy_score(y_test, prediction)
+                            basicscores.append(score)
 
-                if combination_method == "Bordy":  # Głosowanie miękkie za pomoca wektorów wsparcia
-                    #ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
-                    print("Brak metody z uwagi na brak odpowiedniej funkcji")
+                        #if combination_method == "Bordy":  # Głosowanie miękkie za pomoca wektorów wsparcia
+                            #ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
+
+            print(f"{combination_method}, {number_of_classificator}, {basic_classificator}")
+
+            if ((basic_classificator == "SVM") and (combination_method == "Bordy")):
+                print("Brak metody z uwagi na brak odpowiedniej funkcji")
+            else:
+                print("Accuracy:" + str(np.mean(basicscores))+", std: "+str(np.std(basicscores)))
 
 
 #ADABOOST
@@ -210,185 +225,210 @@ for combination_method in combination_methods:
     for number_of_classificator in number_of_classificators:
         for basic_classificator in basic_classificators:
 
-            if basic_classificator == "Decision tree":
-                print(f"{combination_method}, {number_of_classificator}, {basic_classificator}")
+            basicscores = []
+            for cross_time in range(5):
+                for cross_page in range(2):
 
-                classificatorsList = list()
+                    if basic_classificator == "Decision tree":
 
-                for i in range(number_of_classificator):
-                    classificatorsList.append(('classificator no.'+str(i+1), DecisionTreeClassifier()))
-                #print(classificatorsList)
+                        classificatorsList = list()
 
-                X_train_full, X_test, y_train_full, y_test = train_test_split(X, y, test_size=0.50, random_state=1234)
+                        for i in range(number_of_classificator):
+                            classificatorsList.append(('classificator no.'+str(i+1), DecisionTreeClassifier()))
+                        #print(classificatorsList)
 
-                scores = list()
+                        X_train_full, X_test, y_train_full, y_test = train_test_split(
+                            X, y, test_size=0.50, random_state=1234+cross_time)
 
-                X_train_split = np.array_split(
-                    X_train_full, number_of_classificator)
-                y_train_split = np.array_split(
-                    y_train_full, number_of_classificator)
+                        if cross_page == 1:
+                            temp = X_train_full
+                            X_train_full = X_test
+                            X_test = temp
 
-                for i in range(number_of_classificator):
-                    X_train_part = X_train_split[0]
-                    y_train_part = y_train_split[0]
-                    if i > 0:
-                        for j in range(1,i+1):
-                            for k in X_train_split[j]:
-                                X_train_part += k
-                            for k in y_train_split[j]:
-                                y_train_part += k
-                    X_train, X_val, y_train, y_val = train_test_split(
-                        X_train_part, y_train_part, test_size=0.50, random_state=1234+i)
-                    # fit the model
-                    classificatorsList[i][1].fit(X_train, y_train)
-                    # evaluate the model
-                    yhat = classificatorsList[i][1].predict(X_val)
-                    acc = accuracy_score(y_val, yhat)
-                    # store the performance
-                    scores.append(acc)
-                    # report model performance
+                            temp = y_train_full
+                            y_train_full = y_test
+                            y_test = temp
+                        
+                        scores = list()
 
-                #print(scores)
-                if combination_method == "majority":
-                    #ensemble = VotingClassifier(estimators=classificatorsList)
-                    predictionArray = []
-                    for i in range(number_of_classificator):
-                        predictionArray.append(
-                            classificatorsList[i][1].predict(X_test))
-                    prediction = np.array(predictionArray)
-                    prediction = np.apply_along_axis(lambda x: np.argmax(
-                        np.bincount(x)), axis=1, arr=prediction.T)
-                    score = accuracy_score(y_test, prediction)
-                    print('Weighted Avg Accuracy: %.3f\n' % (score*100))
+                        X_train_split = np.array_split(
+                            X_train_full, number_of_classificator)
+                        y_train_split = np.array_split(
+                            y_train_full, number_of_classificator)
 
-                if combination_method == "weighted":
-                    #ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
-                    predictionArray = []
-                    for i in range(number_of_classificator):
-                        predictionArray.append(classificatorsList[i][1].predict(X_test))
-                    
-                    weightArray = []
-                    for i in set(y):
-                        weightArray.append([i,0])
+                        for i in range(number_of_classificator):
+                            X_train_part = X_train_split[0]
+                            y_train_part = y_train_split[0]
+                            if i > 0:
+                                for j in range(1,i+1):
+                                    for k in X_train_split[j]:
+                                        X_train_part += k
+                                    for k in y_train_split[j]:
+                                        y_train_part += k
+                            X_train, X_val, y_train, y_val = train_test_split(
+                                X_train_part, y_train_part, test_size=0.50, random_state=3004+i+cross_time*20)
+                            # fit the model
+                            classificatorsList[i][1].fit(X_train, y_train)
+                            # evaluate the model
+                            yhat = classificatorsList[i][1].predict(X_val)
+                            acc = accuracy_score(y_val, yhat)
+                            # store the performance
+                            scores.append(acc)
+                            # report model performance
 
-                    prediction=[]
-                    for j in range(len(predictionArray[0])):
-                        for i in range(len(predictionArray)):
-                            for k in weightArray:
-                                if (k[0] == predictionArray[i][j]):
-                                    k[1] += scores[i]
-                        maxvalue = 0
-                        maxclass = 0
-                        for k in weightArray:
-                            if k[1] > maxvalue:
-                                maxclass = k[0]
-                            k[1] = 0
-                        prediction.append(maxclass)
-                    score = accuracy_score(y_test, prediction)
-                    print('Weighted Avg Accuracy: %.3f\n' % (score*100))
+                        #print(scores)
+                        if combination_method == "majority":
+                            #ensemble = VotingClassifier(estimators=classificatorsList)
+                            predictionArray = []
+                            for i in range(number_of_classificator):
+                                predictionArray.append(
+                                    classificatorsList[i][1].predict(X_test))
+                            prediction = np.array(predictionArray)
+                            prediction = np.apply_along_axis(lambda x: np.argmax(
+                                np.bincount(x)), axis=1, arr=prediction.T)
+                            score = accuracy_score(y_test, prediction)
+                            basicscores.append(score)
 
-                if combination_method == "Bordy": #Głosowanie miękkie za pomoca wektorów wsparcia
-                    #ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
-                    predictionArray = []
-                    for i in range(number_of_classificator):
-                        predictionArray.append(classificatorsList[i][1].predict_proba(X_test))
-                    esm = np.array(predictionArray)
-                    # Wyliczenie sredniej wartosci wsparcia
-                    average_support = np.mean(esm, axis=0)
-                    # Wskazanie etykiet
-                    prediction = np.argmax(average_support, axis=1)
-                    score = accuracy_score(y_test, prediction)
-                    print('Weighted Avg Accuracy: %.3f\n' % (score*100))
+                        if combination_method == "weighted":
+                            #ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
+                            predictionArray = []
+                            for i in range(number_of_classificator):
+                                predictionArray.append(classificatorsList[i][1].predict(X_test))
+                            
+                            weightArray = []
+                            for i in set(y):
+                                weightArray.append([i,0])
 
-            elif basic_classificator == "SVM":
+                            prediction=[]
+                            for j in range(len(predictionArray[0])):
+                                for i in range(len(predictionArray)):
+                                    for k in weightArray:
+                                        if (k[0] == predictionArray[i][j]):
+                                            k[1] += scores[i]
+                                maxvalue = 0
+                                maxclass = 0
+                                for k in weightArray:
+                                    if k[1] > maxvalue:
+                                        maxclass = k[0]
+                                    k[1] = 0
+                                prediction.append(maxclass)
+                            score = accuracy_score(y_test, prediction)
+                            basicscores.append(score)
 
-                print(
-                    f"{combination_method}, {number_of_classificator}, {basic_classificator}")
+                        if combination_method == "Bordy": #Głosowanie miękkie za pomoca wektorów wsparcia
+                            #ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
+                            predictionArray = []
+                            for i in range(number_of_classificator):
+                                predictionArray.append(classificatorsList[i][1].predict_proba(X_test))
+                            esm = np.array(predictionArray)
+                            # Wyliczenie sredniej wartosci wsparcia
+                            average_support = np.mean(esm, axis=0)
+                            # Wskazanie etykiet
+                            prediction = np.argmax(average_support, axis=1)
+                            score = accuracy_score(y_test, prediction)
+                            basicscores.append(score)
 
-                classificatorsList = list()
+                    elif basic_classificator == "SVM":
 
-                for i in range(number_of_classificator):
-                    classificatorsList.append(
-                        ('classificator no.'+str(i+1), svm.LinearSVC(dual=False)))
-                #print(classificatorsList)
+                        classificatorsList = list()
 
-                X_train_full, X_test, y_train_full, y_test = train_test_split(
-                    X, y, test_size=0.50, random_state=1234)
+                        for i in range(number_of_classificator):
+                            classificatorsList.append(
+                                ('classificator no.'+str(i+1), svm.LinearSVC(dual=False)))
+                        #print(classificatorsList)
 
-                scores = list()
+                        X_train_full, X_test, y_train_full, y_test = train_test_split(
+                            X, y, test_size=0.50, random_state=1234)
 
-                X_train_split = np.array_split(
-                    X_train_full, number_of_classificator)
-                y_train_split = np.array_split(
-                    y_train_full, number_of_classificator)
+                        if cross_page == 1:
+                            temp = X_train_full
+                            X_train_full = X_test
+                            X_test = temp
 
-                for i in range(number_of_classificator):
-                    X_train_part = X_train_split[0]
-                    y_train_part = y_train_split[0]
-                    if i > 0:
-                        for j in range(1,i+1):
-                            for k in X_train_split[j]:
-                                X_train_part += k
-                            for k in y_train_split[j]:
-                                y_train_part += k
-                            #X_train_part = np.concatenate(X_train_part, X_train_split[j])
-                            #y_train_part = np.concatenate(y_train_part, y_train_split[j])
-                    X_train, X_val, y_train, y_val = train_test_split(
-                        X_train_part, y_train_part, test_size=0.50, random_state=1234+i)
-                    # fit the model
-                    classificatorsList[i][1].fit(X_train, y_train)
-                    # evaluate the model
-                    yhat = classificatorsList[i][1].predict(X_val)
-                    acc = accuracy_score(y_val, yhat)
-                    # store the performance
-                    scores.append(acc)
-                    # report model performance
+                            temp = y_train_full
+                            y_train_full = y_test
+                            y_test = temp
 
-                #print(scores)
+                        scores = list()
 
-                if combination_method == "majority":
-                    #ensemble = VotingClassifier(estimators=classificatorsList)
-                    predictionArray = []
-                    for i in range(number_of_classificator):
-                        predictionArray.append(
-                            classificatorsList[i][1].predict(X_test))
-                    prediction = np.array(predictionArray)
-                    prediction = np.apply_along_axis(lambda x: np.argmax(
-                        np.bincount(x)), axis=1, arr=prediction.T)
-                    score = accuracy_score(y_test, prediction)
-                    print('Weighted Avg Accuracy: %.3f\n' % (score*100))
+                        X_train_split = np.array_split(
+                            X_train_full, number_of_classificator)
+                        y_train_split = np.array_split(
+                            y_train_full, number_of_classificator)
 
-                if combination_method == "weighted":
-                    #ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
-                    predictionArray = []
-                    for i in range(number_of_classificator):
-                        predictionArray.append(
-                            classificatorsList[i][1].predict(X_test))
+                        for i in range(number_of_classificator):
+                            X_train_part = X_train_split[0]
+                            y_train_part = y_train_split[0]
+                            if i > 0:
+                                for j in range(1,i+1):
+                                    for k in X_train_split[j]:
+                                        X_train_part += k
+                                    for k in y_train_split[j]:
+                                        y_train_part += k
+                                    #X_train_part = np.concatenate(X_train_part, X_train_split[j])
+                                    #y_train_part = np.concatenate(y_train_part, y_train_split[j])
+                            X_train, X_val, y_train, y_val = train_test_split(
+                                X_train_part, y_train_part, test_size=0.50, random_state=1234+i+cross_time*20)
+                            # fit the model
+                            classificatorsList[i][1].fit(X_train, y_train)
+                            # evaluate the model
+                            yhat = classificatorsList[i][1].predict(X_val)
+                            acc = accuracy_score(y_val, yhat)
+                            # store the performance
+                            scores.append(acc)
+                            # report model performance
 
-                    weightArray = []
-                    for i in set(y):
-                        weightArray.append([i, 0])
+                        #print(scores)
 
-                    prediction = []
-                    for j in range(len(predictionArray[0])):
-                        for i in range(len(predictionArray)):
-                            for k in weightArray:
-                                if (k[0] == predictionArray[i][j]):
-                                    k[1] += scores[i]
-                        maxvalue = 0
-                        maxclass = 0
-                        for k in weightArray:
-                            if k[1] > maxvalue:
-                                maxclass = k[0]
-                            k[1] = 0
-                        prediction.append(maxclass)
-                    score = accuracy_score(y_test, prediction)
-                    print('Weighted Avg Accuracy: %.3f\n' % (score*100))
+                        if combination_method == "majority":
+                            #ensemble = VotingClassifier(estimators=classificatorsList)
+                            predictionArray = []
+                            for i in range(number_of_classificator):
+                                predictionArray.append(
+                                    classificatorsList[i][1].predict(X_test))
+                            prediction = np.array(predictionArray)
+                            prediction = np.apply_along_axis(lambda x: np.argmax(
+                                np.bincount(x)), axis=1, arr=prediction.T)
+                            score = accuracy_score(y_test, prediction)
+                            basicscores.append(score)
 
-                if combination_method == "Bordy":  # Głosowanie miękkie za pomoca wektorów wsparcia
-                    #ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
-                    print("Brak metody z uwagi na brak odpowiedniej funkcji")
+                        if combination_method == "weighted":
+                            #ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
+                            predictionArray = []
+                            for i in range(number_of_classificator):
+                                predictionArray.append(
+                                    classificatorsList[i][1].predict(X_test))
 
+                            weightArray = []
+                            for i in set(y):
+                                weightArray.append([i, 0])
+
+                            prediction = []
+                            for j in range(len(predictionArray[0])):
+                                for i in range(len(predictionArray)):
+                                    for k in weightArray:
+                                        if (k[0] == predictionArray[i][j]):
+                                            k[1] += scores[i]
+                                maxvalue = 0
+                                maxclass = 0
+                                for k in weightArray:
+                                    if k[1] > maxvalue:
+                                        maxclass = k[0]
+                                    k[1] = 0
+                                prediction.append(maxclass)
+                            score = accuracy_score(y_test, prediction)
+                            basicscores.append(score)
+
+                        #if combination_method == "Bordy":  # Głosowanie miękkie za pomoca wektorów wsparcia
+                            #ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
+                            #print("Brak metody z uwagi na brak odpowiedniej funkcji")
+
+            print(f"{combination_method}, {number_of_classificator}, {basic_classificator}")
+
+            if ((basic_classificator == "SVM") and (combination_method == "Bordy")):
+                print("Brak metody z uwagi na brak odpowiedniej funkcji")
+            else:
+                print("Accuracy:" + str(np.mean(basicscores))+", std: "+str(np.std(basicscores)))
 
 #RANDOM SUBSPACE
 
@@ -398,160 +438,188 @@ for combination_method in combination_methods:
     for number_of_classificator in number_of_classificators:
         for basic_classificator in basic_classificators:
 
-            if basic_classificator == "Decision tree":
-                print(f"{combination_method}, {number_of_classificator}, {basic_classificator}")
+            basicscores = []
+            for cross_time in range(5):
+                for cross_page in range(2):
 
-                classificatorsList = list()
+                    if basic_classificator == "Decision tree":
 
-                X_train_full, X_test, y_train_full, y_test = train_test_split(X, y, test_size=0.50, random_state=1234)
+                        classificatorsList = list()
 
-                scores = list()
+                        X_train_full, X_test, y_train_full, y_test = train_test_split(
+                            X, y, test_size=0.50, random_state=1234+cross_time)
 
-                n_features = X.shape[1]
-                n_subspace_features = math.floor(0.5*X.shape[1])
+                        if cross_page == 1:
+                            temp = X_train_full
+                            X_train_full = X_test
+                            X_test = temp
 
-                subspaces = np.random.randint(0, n_features, (number_of_classificator, n_subspace_features))
+                            temp = y_train_full
+                            y_train_full = y_test
+                            y_test = temp
 
-                for i in range(number_of_classificator):
-                    X_train, X_val, y_train, y_val = train_test_split(X_train_full, y_train_full, test_size=0.50, random_state=1234+i)
-                    # fit the model
-                    classificatorsList.append(('classificator no.'+str(i+1), clone(DecisionTreeClassifier()).fit(X_train[:, subspaces[i]], y_train)))
-                    # evaluate the model
-                    yhat = classificatorsList[i][1].predict(X_val[:, subspaces[i]])
-                    acc = accuracy_score(y_val, yhat)
-                    # store the performance
-                    scores.append(acc)
-                    # report model performance
+                        scores = list()
 
-                #print(scores)
+                        n_features = X.shape[1]
+                        n_subspace_features = math.floor(0.5*X.shape[1])
 
-                if combination_method == "majority":
-                    #ensemble = VotingClassifier(estimators=classificatorsList)
-                    predictionArray = []
-                    for i in range(number_of_classificator):
-                        predictionArray.append(
-                            classificatorsList[i][1].predict(X_test[:, subspaces[i]]))
-                    prediction = np.array(predictionArray)
-                    prediction = np.apply_along_axis(lambda x: np.argmax(
-                        np.bincount(x)), axis=1, arr=prediction.T)
-                    score = accuracy_score(y_test, prediction)
-                    print('Weighted Avg Accuracy: %.3f\n' % (score*100))
+                        subspaces = np.random.randint(0, n_features, (number_of_classificator, n_subspace_features))
 
-                if combination_method == "weighted":
-                    #ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
-                    predictionArray = []
-                    for i in range(number_of_classificator):
-                        predictionArray.append(
-                            classificatorsList[i][1].predict(X_test[:, subspaces[i]]))
+                        for i in range(number_of_classificator):
+                            X_train, X_val, y_train, y_val = train_test_split(X_train_full, y_train_full, test_size=0.50, random_state=1234+i+cross_time*20)
+                            # fit the model
+                            classificatorsList.append(('classificator no.'+str(i+1), clone(DecisionTreeClassifier()).fit(X_train[:, subspaces[i]], y_train)))
+                            # evaluate the model
+                            yhat = classificatorsList[i][1].predict(X_val[:, subspaces[i]])
+                            acc = accuracy_score(y_val, yhat)
+                            # store the performance
+                            scores.append(acc)
+                            # report model performance
 
-                    weightArray = []
-                    for i in set(y):
-                        weightArray.append([i, 0])
+                        #print(scores)
 
-                    prediction = []
-                    for j in range(len(predictionArray[0])):
-                        for i in range(len(predictionArray)):
-                            for k in weightArray:
-                                if (k[0] == predictionArray[i][j]):
-                                    k[1] += scores[i]
-                        maxvalue = 0
-                        maxclass = 0
-                        for k in weightArray:
-                            if k[1] > maxvalue:
-                                maxclass = k[0]
-                            k[1] = 0
-                        prediction.append(maxclass)
-                    score = accuracy_score(y_test, prediction)
-                    print('Weighted Avg Accuracy: %.3f\n' % (score*100))
+                        if combination_method == "majority":
+                            #ensemble = VotingClassifier(estimators=classificatorsList)
+                            predictionArray = []
+                            for i in range(number_of_classificator):
+                                predictionArray.append(
+                                    classificatorsList[i][1].predict(X_test[:, subspaces[i]]))
+                            prediction = np.array(predictionArray)
+                            prediction = np.apply_along_axis(lambda x: np.argmax(
+                                np.bincount(x)), axis=1, arr=prediction.T)
+                            score = accuracy_score(y_test, prediction)
+                            basicscores.append(score)
 
-                if combination_method == "Bordy":  # Głosowanie miękkie za pomoca wektorów wsparcia
-                    #ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
-                    predictionArray = []
-                    for i in range(number_of_classificator):
-                        predictionArray.append(
-                            classificatorsList[i][1].predict_proba(X_test[:, subspaces[i]]))
-                    esm = np.array(predictionArray)
-                    # Wyliczenie sredniej wartosci wsparcia
-                    average_support = np.mean(esm, axis=0)
-                    # Wskazanie etykiet
-                    prediction = np.argmax(average_support, axis=1)
-                    score = accuracy_score(y_test, prediction)
-                    print('Weighted Avg Accuracy: %.3f\n' % (score*100))
+                        if combination_method == "weighted":
+                            #ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
+                            predictionArray = []
+                            for i in range(number_of_classificator):
+                                predictionArray.append(
+                                    classificatorsList[i][1].predict(X_test[:, subspaces[i]]))
 
-            elif basic_classificator == "SVM":
+                            weightArray = []
+                            for i in set(y):
+                                weightArray.append([i, 0])
 
-                print(f"{combination_method}, {number_of_classificator}, {basic_classificator}")
+                            prediction = []
+                            for j in range(len(predictionArray[0])):
+                                for i in range(len(predictionArray)):
+                                    for k in weightArray:
+                                        if (k[0] == predictionArray[i][j]):
+                                            k[1] += scores[i]
+                                maxvalue = 0
+                                maxclass = 0
+                                for k in weightArray:
+                                    if k[1] > maxvalue:
+                                        maxclass = k[0]
+                                    k[1] = 0
+                                prediction.append(maxclass)
+                            score = accuracy_score(y_test, prediction)
+                            basicscores.append(score)
 
-                classificatorsList = list()
+                        if combination_method == "Bordy":  # Głosowanie miękkie za pomoca wektorów wsparcia
+                            #ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
+                            predictionArray = []
+                            for i in range(number_of_classificator):
+                                predictionArray.append(
+                                    classificatorsList[i][1].predict_proba(X_test[:, subspaces[i]]))
+                            esm = np.array(predictionArray)
+                            # Wyliczenie sredniej wartosci wsparcia
+                            average_support = np.mean(esm, axis=0)
+                            # Wskazanie etykiet
+                            prediction = np.argmax(average_support, axis=1)
+                            score = accuracy_score(y_test, prediction)
+                            basicscores.append(score)
 
-                X_train_full, X_test, y_train_full, y_test = train_test_split(
-                    X, y, test_size=0.50, random_state=1234)
+                    elif basic_classificator == "SVM":
 
-                scores = list()
 
-                n_features = X.shape[1]
-                n_subspace_features = math.floor(0.5*X.shape[1])
+                        classificatorsList = list()
 
-                subspaces = np.random.randint(
-                    0, n_features, (number_of_classificator, n_subspace_features))
+                        X_train_full, X_test, y_train_full, y_test = train_test_split(
+                            X, y, test_size=0.50, random_state=1234+cross_time)
 
-                for i in range(number_of_classificator):
-                    X_train, X_val, y_train, y_val = train_test_split(
-                        X_train_full, y_train_full, test_size=0.50, random_state=1234+i)
-                    # fit the model
-                    classificatorsList.append(('classificator no.'+str(i+1), clone(
-                        svm.LinearSVC(dual=False)).fit(X_train[:, subspaces[i]], y_train)))
-                    # evaluate the model
-                    yhat = classificatorsList[i][1].predict(X_val[:, subspaces[i]])
-                    acc = accuracy_score(y_val, yhat)
-                    # store the performance
-                    scores.append(acc)
-                    # report model performance
+                        if cross_page == 1:
+                            temp = X_train_full
+                            X_train_full = X_test
+                            X_test = temp
 
-                #print(scores)
+                            temp = y_train_full
+                            y_train_full = y_test
+                            y_test = temp
 
-                if combination_method == "majority":
-                    #ensemble = VotingClassifier(estimators=classificatorsList)
-                    predictionArray = []
-                    for i in range(number_of_classificator):
-                        predictionArray.append(
-                            classificatorsList[i][1].predict(X_test[:, subspaces[i]]))
-                    prediction = np.array(predictionArray)
-                    prediction = np.apply_along_axis(lambda x: np.argmax(
-                        np.bincount(x)), axis=1, arr=prediction.T)
-                    score = accuracy_score(y_test, prediction)
-                    print('Weighted Avg Accuracy: %.3f\n' % (score*100))
+                        scores = list()
 
-                if combination_method == "weighted":
-                    #ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
-                    predictionArray = []
-                    for i in range(number_of_classificator):
-                        predictionArray.append(
-                            classificatorsList[i][1].predict(X_test[:, subspaces[i]]))
+                        n_features = X.shape[1]
+                        n_subspace_features = math.floor(0.5*X.shape[1])
 
-                    weightArray = []
-                    for i in set(y):
-                        weightArray.append([i, 0])
+                        subspaces = np.random.randint(
+                            0, n_features, (number_of_classificator, n_subspace_features))
 
-                    prediction = []
-                    for j in range(len(predictionArray[0])):
-                        for i in range(len(predictionArray)):
-                            for k in weightArray:
-                                if (k[0] == predictionArray[i][j]):
-                                    k[1] += scores[i]
-                        maxvalue = 0
-                        maxclass = 0
-                        for k in weightArray:
-                            if k[1] > maxvalue:
-                                maxclass = k[0]
-                            k[1] = 0
-                        prediction.append(maxclass)
-                    score = accuracy_score(y_test, prediction)
-                    print('Weighted Avg Accuracy: %.3f\n' % (score*100))
+                        for i in range(number_of_classificator):
+                            X_train, X_val, y_train, y_val = train_test_split(
+                                X_train_full, y_train_full, test_size=0.50, random_state=1234+i+cross_time*20)
+                            # fit the model
+                            classificatorsList.append(('classificator no.'+str(i+1), clone(
+                                svm.LinearSVC(dual=False)).fit(X_train[:, subspaces[i]], y_train)))
+                            # evaluate the model
+                            yhat = classificatorsList[i][1].predict(X_val[:, subspaces[i]])
+                            acc = accuracy_score(y_val, yhat)
+                            # store the performance
+                            scores.append(acc)
+                            # report model performance
 
-                if combination_method == "Bordy":  # Głosowanie miękkie za pomoca wektorów wsparcia
-                    #ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
-                    print("Brak metody z uwagi na brak odpowiedniej funkcji")
+                        #print(scores)
+
+                        if combination_method == "majority":
+                            #ensemble = VotingClassifier(estimators=classificatorsList)
+                            predictionArray = []
+                            for i in range(number_of_classificator):
+                                predictionArray.append(
+                                    classificatorsList[i][1].predict(X_test[:, subspaces[i]]))
+                            prediction = np.array(predictionArray)
+                            prediction = np.apply_along_axis(lambda x: np.argmax(
+                                np.bincount(x)), axis=1, arr=prediction.T)
+                            score = accuracy_score(y_test, prediction)
+                            basicscores.append(score)
+
+                        if combination_method == "weighted":
+                            #ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
+                            predictionArray = []
+                            for i in range(number_of_classificator):
+                                predictionArray.append(
+                                    classificatorsList[i][1].predict(X_test[:, subspaces[i]]))
+
+                            weightArray = []
+                            for i in set(y):
+                                weightArray.append([i, 0])
+
+                            prediction = []
+                            for j in range(len(predictionArray[0])):
+                                for i in range(len(predictionArray)):
+                                    for k in weightArray:
+                                        if (k[0] == predictionArray[i][j]):
+                                            k[1] += scores[i]
+                                maxvalue = 0
+                                maxclass = 0
+                                for k in weightArray:
+                                    if k[1] > maxvalue:
+                                        maxclass = k[0]
+                                    k[1] = 0
+                                prediction.append(maxclass)
+                            score = accuracy_score(y_test, prediction)
+                            basicscores.append(score)
+
+                        #if combination_method == "Bordy":  # Głosowanie miękkie za pomoca wektorów wsparcia
+                            #ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
+                            #print("Brak metody z uwagi na brak odpowiedniej funkcji")
+        
+            print(f"{combination_method}, {number_of_classificator}, {basic_classificator}")
+
+            if ((basic_classificator == "SVM") and (combination_method == "Bordy")):
+                print("Brak metody z uwagi na brak odpowiedniej funkcji")
+            else:
+                print("Accuracy:" + str(np.mean(basicscores))+", std: "+str(np.std(basicscores)))
 
 # classificatorsList = list()
 
