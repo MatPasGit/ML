@@ -266,7 +266,7 @@ for combination_method in combination_methods:
                                     for k in y_train_split[j]:
                                         y_train_part += k
                             X_train, X_val, y_train, y_val = train_test_split(
-                                X_train_part, y_train_part, test_size=0.50, random_state=3004+i+cross_time*20)
+                                X_train_part, y_train_part, test_size=0.50, random_state=1234)
                             # fit the model
                             classificatorsList[i][1].fit(X_train, y_train)
                             # evaluate the model
@@ -621,68 +621,6 @@ for combination_method in combination_methods:
             else:
                 print("Accuracy:" + str(np.mean(basicscores))+", std: "+str(np.std(basicscores)))
 
-# classificatorsList = list()
-
-# for i in range(3):
-#     classificatorsList.append(
-#         ('classificator no.'+str(i+1), DecisionTreeClassifier()))
-
-# print(classificatorsList)
-
-# X_train_full, X_test, y_train_full, y_test = train_test_split(
-#     X, y, test_size=0.50, random_state=1)
-
-# X_train, X_val, y_train, y_val = train_test_split(
-#     X_train_full, y_train_full, test_size=0.33, random_state=1)
-
-# scores = list()
-
-# for name, model in classificatorsList:
-
-# 	# fit the model
-# 	model.fit(X_train, y_train)
-# 	# evaluate the model
-# 	yhat = model.predict(X_val)
-# 	acc = accuracy_score(y_val, yhat)
-# 	# store the performance
-# 	scores.append(acc)
-# 	# report model performance
-
-# print(scores)
-
-# #evaluate_models(models, X_train, X_val, y_train, y_val):
-
-# ensemble = VotingClassifier(
-#     estimators=classificatorsList, voting='soft', weights=scores)
-# # fit the ensemble on the training dataset
-# ensemble.fit(X_train_full, y_train_full)
-# # make predictions on test set
-# yhat = ensemble.predict(X_test)
-# # evaluate predictions
-# score = accuracy_score(y_test, yhat)
-# print('Weighted Avg Accuracy: %.3f' % (score*100))
-# # evaluate each standalone model
-
-# for name, model in classificatorsList:
-# 	# fit the model
-# 	model.fit(X_train_full, y_train_full)
-# 	# evaluate the model
-# 	yhat = model.predict(X_test)
-# 	acc = accuracy_score(y_test, yhat)
-# 	# store the performance
-# 	scores.append(acc)
-# 	# report model performance
-
-
-# for i in range(len(classificatorsList)):
-# 	print('>%s: %.3f' % (classificatorsList[i][0], scores[i]*100))
-# # evaluate equal weighting
-# ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
-# ensemble.fit(X_train_full, y_train_full)
-# yhat = ensemble.predict(X_test)
-# score = accuracy_score(y_test, yhat)
-# print('Voting Accuracy: %.3f' % (score*100))
-
 
 # classifier = None
 # method = None
@@ -757,19 +695,3 @@ for combination_method in combination_methods:
 
                 #     if combination_method == "weighted":
                 #         ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
-
-
-
-
-
-
-
-
-#TODO:
-#KOD MA BYĆ JEDNĄ PŁYNNĄ ŚCIANĄ TEKSTU, BEZ ODRĘBNYCH PLIKÓW, KLAS I FUNKCJI !!!!
-# 1.zmiana zestawów danych na pojedyncze pliki, wszystkie rekordy muszą być kompletne!!!!, ostatnia kolumna to klasa
-# 10. implementacja testów statystycznych t-Studenta
-# 11. implementacja testów statystycznych Wilcoxona
-#A na koniec wyniki, wykresy i testy statystyczne
-#Posprzątać lekko kod
-#Zaimplementować walidację krzyżową
