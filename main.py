@@ -63,24 +63,16 @@ for combination_method in combination_methods:
                         classificatorsList.append(('classificator no.'+str(i+1), DecisionTreeClassifier()))
                 #print(classificatorsList)
 
-                X_train_full, X_test, y_train_full, y_test = train_test_split(X, y, test_size=0.50, random_state=1234)
+                #X_train_full, X_test, y_train_full, y_test = train_test_split(X, y, test_size=0.50, random_state=1234)
 
                 scores = list()
 
                 for i in range(number_of_classificator):
 
-                    cv_eval = list()
                     for train_index, test_index in kf.split(X, y):
-                        X_train, X_test1 = X[train_index], X[test_index]
-                        y_train, y_test1 = y[train_index], y[test_index]
+                        X_train, X_test = X[train_index], X[test_index]
+                        y_train, y_test = y[train_index], y[test_index]
                         classificatorsList[i][1].fit(X_train,y_train)
-                        print(classificatorsList[i][1].score(X_test1,y_test1, sample_weight=None))
-                        classificatorsList[i][1].fit(X_test1,y_test1)
-                        cv_eval.append(classificatorsList[i][1].score(X_train, y_train, sample_weight=None))
-
-                    avg_acc = np.sum(cv_eval)/10
-                    var_acc = np.std(cv_eval)
-                    scores.append(avg_acc)
 
                     #X_train, X_val, y_train, y_val = train_test_split(X_train_full, y_train_full, test_size=0.50, random_state=1234+i)
                     # fit the model
@@ -89,9 +81,9 @@ for combination_method in combination_methods:
                     #yhat = classificatorsList[i][1].predict(X_val)
                     #acc = accuracy_score(y_val, yhat)
                     #walidacja krzyzowa
-
+                    acc = cross_val_score( estimator=classificatorsList[i][1] ,X=X, y=y,n_jobs=4, cv=kf)
                     # store the performance
-
+                    scores.append(acc)
                     # report model performance
 
 
