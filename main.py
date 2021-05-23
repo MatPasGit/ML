@@ -1,4 +1,4 @@
-from scipy.stats import ttest_ind
+from scipy.stats import ttest_ind, wilcoxon
 import numpy as np
 import math
 from numpy import mean
@@ -17,7 +17,7 @@ from sklearn.base import ClassifierMixin, clone
 from sklearn.ensemble import BaseEnsemble, BaggingClassifier, AdaBoostClassifier, VotingClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import RepeatedStratifiedKFold, KFold, cross_val_score, train_test_split
-from nltk.classify import SklearnClassifier
+
 from sklearn.svm import SVC
 
 #Pobranie zawartości zestawu danych
@@ -30,6 +30,20 @@ X = dataset[1:, :-1]
 y = dataset[1:, -1].astype(int)
 print(X)
 print(y)
+
+
+#Dla SVM
+bagging_acc_list_majority = list()
+bagging_acc_list_weighted = list()
+bagging_acc_list_bordy = list()
+
+adaboost_acc_list_majority = list()
+adaboost_acc_list_weighted = list()
+adaboost_acc_list_bordy = list()
+
+rf_acc_list_majority = list()
+rf_acc_list_weighted = list()
+rf_acc_list_bordy = list()
 
 
 #Walidacja krzyżowa (5 powtórzeń 2-krotnej walidacji krzyżowej)
@@ -86,6 +100,9 @@ for combination_method in combination_methods:
                     prediction = np.array(predictionArray)
                     prediction = np.apply_along_axis(lambda x: np.argmax(np.bincount(x)), axis=1, arr=prediction.T)
                     score = accuracy_score(y_test, prediction)
+                    if number_of_classificator == 10 and basic_classificator == "Decision tree":
+                        bagging_acc_list_majority.append(score)
+
                     print('Weighted Avg Accuracy: %.3f\n' % (score*100))
 
                 if combination_method == "weighted":
@@ -112,6 +129,9 @@ for combination_method in combination_methods:
                             k[1] = 0
                         prediction.append(maxclass)
                     score = accuracy_score(y_test, prediction)
+
+                    if number_of_classificator == 10 and basic_classificator == "Decision tree":
+                        bagging_acc_list_weighted.append(score)
                     print('Weighted Avg Accuracy: %.3f\n' % (score*100))
 
                 if combination_method == "Bordy": #Głosowanie miękkie za pomoca wektorów wsparcia
@@ -125,6 +145,9 @@ for combination_method in combination_methods:
                     # Wskazanie etykiet
                     prediction = np.argmax(average_support, axis=1)
                     score = accuracy_score(y_test, prediction)
+                    if number_of_classificator == 10 and basic_classificator =="Decision tree":
+                        bagging_acc_list_bordy.append(score)
+
                     print('Weighted Avg Accuracy: %.3f\n' % (score*100))
 
             elif basic_classificator == "SVM":
@@ -259,6 +282,9 @@ for combination_method in combination_methods:
                     prediction = np.apply_along_axis(lambda x: np.argmax(
                         np.bincount(x)), axis=1, arr=prediction.T)
                     score = accuracy_score(y_test, prediction)
+                    if number_of_classificator == 10 and basic_classificator == "Decision tree":
+                       adaboost_acc_list_majority.append(score)
+
                     print('Weighted Avg Accuracy: %.3f\n' % (score*100))
 
                 if combination_method == "weighted":
@@ -285,6 +311,8 @@ for combination_method in combination_methods:
                             k[1] = 0
                         prediction.append(maxclass)
                     score = accuracy_score(y_test, prediction)
+                    if number_of_classificator == 10 and basic_classificator == "Decision tree":
+                       adaboost_acc_list_weighted.append(score)
                     print('Weighted Avg Accuracy: %.3f\n' % (score*100))
 
                 if combination_method == "Bordy": #Głosowanie miękkie za pomoca wektorów wsparcia
@@ -298,6 +326,8 @@ for combination_method in combination_methods:
                     # Wskazanie etykiet
                     prediction = np.argmax(average_support, axis=1)
                     score = accuracy_score(y_test, prediction)
+                    if number_of_classificator == 10 and basic_classificator == "Decision tree":
+                       adaboost_acc_list_bordy.append(score)
                     print('Weighted Avg Accuracy: %.3f\n' % (score*100))
 
             elif basic_classificator == "SVM":
@@ -435,6 +465,8 @@ for combination_method in combination_methods:
                     prediction = np.apply_along_axis(lambda x: np.argmax(
                         np.bincount(x)), axis=1, arr=prediction.T)
                     score = accuracy_score(y_test, prediction)
+                    if number_of_classificator == 10 and basic_classificator == "Decision tree":
+                       rf_acc_list_majority.append(score)
                     print('Weighted Avg Accuracy: %.3f\n' % (score*100))
 
                 if combination_method == "weighted":
@@ -462,6 +494,8 @@ for combination_method in combination_methods:
                             k[1] = 0
                         prediction.append(maxclass)
                     score = accuracy_score(y_test, prediction)
+                    if number_of_classificator == 10 and basic_classificator == "Decision tree":
+                       rf_acc_list_weighted.append(score)
                     print('Weighted Avg Accuracy: %.3f\n' % (score*100))
 
                 if combination_method == "Bordy":  # Głosowanie miękkie za pomoca wektorów wsparcia
@@ -476,6 +510,8 @@ for combination_method in combination_methods:
                     # Wskazanie etykiet
                     prediction = np.argmax(average_support, axis=1)
                     score = accuracy_score(y_test, prediction)
+                    if number_of_classificator == 10 and basic_classificator == "Decision tree":
+                       rf_acc_list_bordy.append(score)
                     print('Weighted Avg Accuracy: %.3f\n' % (score*100))
 
             elif basic_classificator == "SVM":
@@ -552,6 +588,22 @@ for combination_method in combination_methods:
                 if combination_method == "Bordy":  # Głosowanie miękkie za pomoca wektorów wsparcia
                     #ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
                     print("Brak metody z uwagi na brak odpowiedniej funkcji")
+
+stat,p = wilcoxon(bagging_acc_list_majority,adaboost_acc_list_majority )
+stat,p = wilcoxon(bagging_acc_list_weighted,adaboost_acc_list_weighted )
+stat,p = wilcoxon(bagging_acc_list_bordy,adaboost_acc_list_bordy )
+
+stat,p = wilcoxon(bagging_acc_list_majority,rf_acc_list_majority )
+stat,p = wilcoxon(bagging_acc_list_weighted,rf_acc_list_weighted )
+stat,p = wilcoxon(bagging_acc_list_bordy,rf_acc_list_bordy )
+
+stat,p = wilcoxon(adaboost_acc_list_majority,rf_acc_list_majority )
+stat,p = wilcoxon(adaboost_acc_list_weighted,rf_acc_list_weighted )
+stat,p = wilcoxon(adaboost_acc_list_bordy,rf_acc_list_bordy )
+
+
+
+
 
 # classificatorsList = list()
 
