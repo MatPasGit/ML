@@ -590,17 +590,54 @@ for combination_method in combination_methods:
                     print("Brak metody z uwagi na brak odpowiedniej funkcji")
 
 stat,p = wilcoxon(bagging_acc_list_majority,adaboost_acc_list_majority )
+print("bagging vs adaboost majority voting wilcoxon test")
+if p > 0.05:
+	print('Same distribution ')
+else:
+	print('Different distribution ')
+
 stat,p = wilcoxon(bagging_acc_list_weighted,adaboost_acc_list_weighted )
 stat,p = wilcoxon(bagging_acc_list_bordy,adaboost_acc_list_bordy )
 
 stat,p = wilcoxon(bagging_acc_list_majority,rf_acc_list_majority )
+print("bagging vs random subs wilcoxon test")
+print("majority voting")
+if p > 0.05:
+	print('Same distribution ')
+else:
+	print('Different distribution ')
 stat,p = wilcoxon(bagging_acc_list_weighted,rf_acc_list_weighted )
+print("weighted")
+if p > 0.05:
+	print('Same distribution ')
+else:
+	print('Different distribution ')
 stat,p = wilcoxon(bagging_acc_list_bordy,rf_acc_list_bordy )
+print("bordy")
+if p > 0.05:
+	print('Same distribution ')
+else:
+	print('Different distribution ')
 
 stat,p = wilcoxon(adaboost_acc_list_majority,rf_acc_list_majority )
+print("adaboost vs random subs wilcoxon test")
+print("majority voting")
+if p > 0.05:
+	print('Same distribution ')
+else:
+	print('Different distribution ')
 stat,p = wilcoxon(adaboost_acc_list_weighted,rf_acc_list_weighted )
+print("weighted:")
+if p > 0.05:
+	print('Same distribution ')
+else:
+	print('Different distribution ')
 stat,p = wilcoxon(adaboost_acc_list_bordy,rf_acc_list_bordy )
-
+print("bordy:")
+if p > 0.05:
+	print('Same distribution ')
+else:
+	print('Different distribution ')
 
 
 
