@@ -90,6 +90,7 @@ for combination_method in combination_methods:
                             prediction = np.apply_along_axis(lambda x: np.argmax(np.bincount(x)), axis=1, arr=prediction.T)
                             score = accuracy_score(y_test, prediction)
                             basicscores.append(score)
+                            subwilcoxon.append(prediction)
 
                         if combination_method == "weighted":
                             #ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
@@ -117,6 +118,7 @@ for combination_method in combination_methods:
                                 prediction.append(maxclass)
                             score = accuracy_score(y_test, prediction)
                             basicscores.append(score)
+                            subwilcoxon.append(prediction)
 
                         if combination_method == "Bordy": #Głosowanie miękkie za pomoca wektorów wsparcia
                             #ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
@@ -128,6 +130,7 @@ for combination_method in combination_methods:
                             prediction = np.argmax(average_support, axis=1)
                             score = accuracy_score(y_test, prediction)
                             basicscores.append(score)
+                            subwilcoxon.append(prediction)
 
                     elif basic_classificator == "SVM":
 
@@ -172,6 +175,7 @@ for combination_method in combination_methods:
                                 np.bincount(x)), axis=1, arr=prediction.T)
                             score = accuracy_score(y_test, prediction)
                             basicscores.append(score)
+                            subwilcoxon.append(prediction)
 
                         if combination_method == "weighted":
                             #ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
@@ -200,6 +204,7 @@ for combination_method in combination_methods:
                                 prediction.append(maxclass)
                             score = accuracy_score(y_test, prediction)
                             basicscores.append(score)
+                            subwilcoxon.append(prediction)
 
             print(f"{combination_method}, {number_of_classificator}, {basic_classificator}")
 
@@ -207,8 +212,22 @@ for combination_method in combination_methods:
                 print("Brak metody z uwagi na brak odpowiedniej funkcji")
             else:
                 print("Accuracy:" + str(np.mean(basicscores))+", std: "+str(np.std(basicscores)))
-                wilcoxonarray.append(basicscores.copy())
+                wilcoxon = []
+                for i in range(len(subwilcoxon)):
+                    if i == 0:
+                        wilcoxon = subwilcoxon[i].copy()
+                    else:
+                        wilcoxon = np.concatenate([wilcoxon,subwilcoxon[i]])
+                wilcoxonarray.append(wilcoxon)
+
             
+
+# for j in range(3):
+#     for i in range(15):
+#         if i == 0:
+#             wilcoxonarraymean.append(wilcoxonarray[j*15+i])
+#         else:
+#             wilcoxonarraymean[j] = np.concatenate([wilcoxonarraymean[j],wilcoxonarray[j*15+i]])
 
 #ADABOOST
 
@@ -278,6 +297,7 @@ for combination_method in combination_methods:
                                 np.bincount(x)), axis=1, arr=prediction.T)
                             score = accuracy_score(y_test, prediction)
                             basicscores.append(score)
+                            subwilcoxon.append(prediction)
 
                         if combination_method == "weighted":
                             #ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
@@ -305,6 +325,7 @@ for combination_method in combination_methods:
                                 prediction.append(maxclass)
                             score = accuracy_score(y_test, prediction)
                             basicscores.append(score)
+                            subwilcoxon.append(prediction)
 
                         if combination_method == "Bordy": #Głosowanie miękkie za pomoca wektorów wsparcia
                             #ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
@@ -316,6 +337,7 @@ for combination_method in combination_methods:
                             prediction = np.argmax(average_support, axis=1)
                             score = accuracy_score(y_test, prediction)
                             basicscores.append(score)
+                            subwilcoxon.append(prediction)
 
                     elif basic_classificator == "SVM":
 
@@ -375,6 +397,7 @@ for combination_method in combination_methods:
                                 np.bincount(x)), axis=1, arr=prediction.T)
                             score = accuracy_score(y_test, prediction)
                             basicscores.append(score)
+                            subwilcoxon.append(prediction)
 
                         if combination_method == "weighted":
                             #ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
@@ -403,6 +426,7 @@ for combination_method in combination_methods:
                                 prediction.append(maxclass)
                             score = accuracy_score(y_test, prediction)
                             basicscores.append(score)
+                            subwilcoxon.append(prediction)
 
             print(f"{combination_method}, {number_of_classificator}, {basic_classificator}")
 
@@ -410,7 +434,13 @@ for combination_method in combination_methods:
                 print("Brak metody z uwagi na brak odpowiedniej funkcji")
             else:
                 print("Accuracy:" + str(np.mean(basicscores))+", std: "+str(np.std(basicscores)))
-                wilcoxonarray.append(basicscores.copy())
+                wilcoxon = []
+                for i in range(len(subwilcoxon)):
+                    if i == 0:
+                        wilcoxon = subwilcoxon[i].copy()
+                    else:
+                        wilcoxon = np.concatenate([wilcoxon,subwilcoxon[i]])
+                wilcoxonarray.append(wilcoxon)
             
 
 #RANDOM SUBSPACE
@@ -469,6 +499,7 @@ for combination_method in combination_methods:
                                 np.bincount(x)), axis=1, arr=prediction.T)
                             score = accuracy_score(y_test, prediction)
                             basicscores.append(score)
+                            subwilcoxon.append(prediction)
 
                         if combination_method == "weighted":
                             #ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
@@ -497,6 +528,7 @@ for combination_method in combination_methods:
                                 prediction.append(maxclass)
                             score = accuracy_score(y_test, prediction)
                             basicscores.append(score)
+                            subwilcoxon.append(prediction)
 
                         if combination_method == "Bordy":  # Głosowanie miękkie za pomoca wektorów wsparcia
                             #ensemble = VotingClassifier(estimators=classificatorsList, voting='soft')
@@ -509,6 +541,7 @@ for combination_method in combination_methods:
                             prediction = np.argmax(average_support, axis=1)
                             score = accuracy_score(y_test, prediction)
                             basicscores.append(score)
+                            subwilcoxon.append(prediction)
 
                     elif basic_classificator == "SVM":
 
@@ -557,6 +590,7 @@ for combination_method in combination_methods:
                                 np.bincount(x)), axis=1, arr=prediction.T)
                             score = accuracy_score(y_test, prediction)
                             basicscores.append(score)
+                            subwilcoxon.append(prediction)
 
                         if combination_method == "weighted":
                             #ensemble = VotingClassifier(estimators=classificatorsList, weights=scores)
@@ -585,6 +619,7 @@ for combination_method in combination_methods:
                                 prediction.append(maxclass)
                             score = accuracy_score(y_test, prediction)
                             basicscores.append(score)
+                            subwilcoxon.append(prediction)
         
             print(f"{combination_method}, {number_of_classificator}, {basic_classificator}")
 
@@ -592,24 +627,22 @@ for combination_method in combination_methods:
                 print("Brak metody z uwagi na brak odpowiedniej funkcji")
             else:
                 print("Accuracy:" + str(np.mean(basicscores))+", std: "+str(np.std(basicscores)))
-                wilcoxonarray.append(basicscores.copy())
+                wilcoxon = []
+                for i in range(len(subwilcoxon)):
+                    if i == 0:
+                        wilcoxon = subwilcoxon[i].copy()
+                    else:
+                        wilcoxon = np.concatenate([wilcoxon,subwilcoxon[i]])
+                wilcoxonarray.append(wilcoxon)
             
 
-wilcoxonarraymean = []
-
-for j in range(3):
-    for i in range(15):
-        if i == 0:
-            wilcoxonarraymean.append(wilcoxonarray[j*15+i])
-        else:
-            wilcoxonarraymean[j] = np.concatenate([wilcoxonarraymean[j],wilcoxonarray[j*15+i]])
 
 wilcoxonStat = pd.DataFrame()
 
-for arrayOne in range(len(wilcoxonarraymean)):
+for arrayOne in range(len(wilcoxonarray)):
     for arraySecond in range(arrayOne+1):
         if arrayOne != arraySecond:
-            stat, p = wilcoxon(wilcoxonarraymean[arrayOne], wilcoxonarraymean[arraySecond])
+            stat, p = wilcoxon(wilcoxonarray[arrayOne], wilcoxonarray[arraySecond])
             print('Statistics=%.3f, p=%.3f' % (stat, p))
             alpha = 0.05
             if p > alpha:
