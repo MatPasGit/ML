@@ -11,44 +11,33 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC  # svm.LinearSVC(dual=False), SVC()
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
+from scipy.stats import wilcoxon
 import pandas as pd
 
-class RandomSubspaceEnsemble(BaseEnsemble, ClassifierMixin):
-    """
-    Random subspace ensemble
-    Komitet klasyfikatorow losowych podprzestrzeniach cech
-    """
+class EnsembleModel(BaseEnsemble, ClassifierMixin):
 
-    def __init__(self, base_estimator=None, n_estimators=10, n_subspace_features=5, hard_voting=True, random_state=None):
-        # Klasyfikator bazowy
+    def __init__(self, ensemble_method ="RandomSubspace" ,base_estimator=None, n_estimators=10, n_subspace_features=5, voting="majority", random_state=None):
+        self.ensemble_method = ensemble_method
         self.base_estimator = base_estimator
-        # Liczba klasyfikatorow
         self.n_estimators = n_estimators
-        # Liczba cech w jednej podprzestrzeni
         self.n_subspace_features = n_subspace_features
-        # Tryb podejmowania decyzji
-        self.hard_voting = hard_voting
-        # Ustawianie ziarna losowosci
+        self.voting = voting
         self.random_state = random_state
         np.random.seed(self.random_state)
 
     def fit(self, X, y):
-        # Sprawdzenie czy X i y maja wlasciwy ksztalt
         X, y = check_X_y(X, y)
-        # Przehowywanie nazw klas
         self.classes_ = np.unique(y)
 
-        # Zapis liczby atrybutow
+        #Random Subspace
         self.n_features = X.shape[1]
-        # Czy liczba cech w podprzestrzeni jest mniejsza od calkowitej liczby cech
         if self.n_subspace_features > self.n_features:
             raise ValueError(
                 "Number of features in subspace higher than number of features.")
-        # Wylosowanie podprzestrzeni cech
+
         self.subspaces = np.random.randint(
             0, self.n_features, (self.n_estimators, self.n_subspace_features))
 
-        # Wyuczenie nowych modeli i stworzenie zespolu
         self.ensemble_ = []
         for i in range(self.n_estimators):
             self.ensemble_.append(
@@ -57,44 +46,35 @@ class RandomSubspaceEnsemble(BaseEnsemble, ClassifierMixin):
         return self
 
     def predict(self, X):
-        # Sprawdzenie czy modele sa wyuczone
         check_is_fitted(self, "classes_")
-        # Sprawdzenie poprawnosci danych
         X = check_array(X)
-        # Sprawdzenie czy liczba cech się zgadza
         if X.shape[1] != self.n_features:
             raise ValueError("number of features does not match")
 
-        if self.hard_voting:
-            # Podejmowanie decyzji na podstawie twardego glosowania
+        if self.voting == "majority":
             pred_ = []
-            # Modele w zespole dokonuja predykcji
             for i, member_clf in enumerate(self.ensemble_):
                 pred_.append(member_clf.predict(X[:, self.subspaces[i]]))
-            # Zamiana na miacierz numpy (ndarray)
             pred_ = np.array(pred_)
-            # Liczenie glosow
             prediction = np.apply_along_axis(
                 lambda x: np.argmax(np.bincount(x)), axis=1, arr=pred_.T)
-            # Zwrocenie predykcji calego zespolu
             return self.classes_[prediction]
-        else:
-            # Podejmowanie decyzji na podstawie wektorow wsparcia
+        elif self.voting == "vector":
             esm = self.ensemble_support_matrix(X)
-            # Wyliczenie sredniej wartosci wsparcia
             average_support = np.mean(esm, axis=0)
-            # Wskazanie etykiet
             prediction = np.argmax(average_support, axis=1)
-            # Zwrocenie predykcji calego zespolu
+            return self.classes_[prediction]
+        else: #TODO weighted
+            esm = self.ensemble_support_matrix(X)
+            average_support = np.mean(esm, axis=0)
+            prediction = np.argmax(average_support, axis=1)
             return self.classes_[prediction]
 
     def ensemble_support_matrix(self, X):
-        # Wyliczenie macierzy wsparcia
         probas_ = []
         for i, member_clf in enumerate(self.ensemble_):
             probas_.append(member_clf.predict_proba(X[:, self.subspaces[i]]))
         return np.array(probas_)
-
 
 
 #MAIN EXPERIMENT
@@ -105,48 +85,94 @@ y = dataset[1:, -1].astype(int)
 
 print("Total number of features", X.shape[1])
 
-n_splits = 5
-n_repeats = 10
+n_splits = 2
+n_repeats = 5
 rskf = RepeatedStratifiedKFold(
     n_splits=n_splits, n_repeats=n_repeats, random_state=1234)
 
+ensemble_methods = ["RandomSubspace"] # "Bagging", "Adaboost",
 base_estimators = [GaussianNB(), DecisionTreeClassifier(), KNeighborsClassifier()]
 number_of_classificators = [5, 10, 15]
-combination_methods = [True, False]
+combination_methods = ["majority",  "vector"]  # "weighted",
 
 test_results = pd.DataFrame()
+wilcoxonarray = []
 
-for base in base_estimators:
-    for number in number_of_classificators:
-        for combination in combination_methods:
-            print(
-                f"{str(base)}, {str(number)}, {str(combination)}")
+for ensemble_method in ensemble_methods:
+    for base in base_estimators:
+        for number in number_of_classificators:
+            for combination in combination_methods:
 
-            clf = RandomSubspaceEnsemble(base_estimator=base, n_estimators=number, n_subspace_features=1, hard_voting=combination, random_state=123)
-            scoresaccuracy = []
-            scoresrecall = []
-            scoresprecision = []
-            for train, test in rskf.split(X, y):
-                clf.fit(X[train], y[train])
-                y_pred = clf.predict(X[test])
-                scoresaccuracy.append(accuracy_score(y[test], y_pred))
-                scoresrecall.append(recall_score(y[test], y_pred))
-                scoresprecision.append(precision_score(y[test], y_pred, average='weighted', labels=np.unique(y_pred)))
-            print("Hard voting - accuracy score: %.3f (%.3f)" %(np.mean(scoresaccuracy), np.std(scoresaccuracy)))
+                clf = EnsembleModel(ensemble_method=ensemble_method, base_estimator=base, n_estimators=number, n_subspace_features=1, voting=combination, random_state=123)
+                scores = []
+                subwilcoxon = []
+                first = True
 
-            param_dict = {
-                'Model': str(base),
-                'Number of classificators': str(number),
-                'HardVoting': str(combination),
-                'accuracy': np.mean(scoresaccuracy),
-                'accuracy std': np.std(scoresaccuracy),
-                'recall': np.mean(scoresrecall),
-                'recall std': np.std(scoresrecall),
-                'precision': np.mean(scoresprecision),
-                'precision std': np.std(scoresprecision)
-            }
-            test_results = test_results.append(param_dict, ignore_index=True)
+                for train, test in rskf.split(X, y):
+                    clf.fit(X[train], y[train])
+                    y_pred = clf.predict(X[test])
+
+                    if first:
+                        subwilcoxon = y_pred.copy()
+                        first = False
+                    else:
+                        subwilcoxon = np.add(subwilcoxon, y_pred)
+
+                    scores.append([accuracy_score(y[test], y_pred), 
+                                recall_score(y[test], y_pred),
+                                precision_score(y[test], y_pred, average='weighted', labels=np.unique(y_pred))])
+                print(f"{str(ensemble_method)}, {str(base)}, {str(number)}, {str(combination)}"+" = Accuracy score: %.3f (%.3f)" % (
+                    np.mean(scores, axis=0)[0], np.std(scores, axis=0)[0]))
+
+                test_results = test_results.append({
+                    'Ensemble method': str(ensemble_method),
+                    'Model': str(base),
+                    'Number of classificators': str(number),
+                    'HardVoting': str(combination),
+                    'accuracy': round(np.mean(scores, axis=0)[0], 4),
+                    'accuracy std': "("+str(round(np.std(scores, axis=0)[0], 4))+")",
+                    'recall': round(np.mean(scores, axis=0)[1], 4),
+                    'recall std': "("+str(round(np.std(scores, axis=0)[1], 4))+")",
+                    'precision': round(np.mean(scores, axis=0)[2], 4),
+                    'precision std': "("+str(round(np.std(scores, axis=0)[2], 4))+")"
+                }, ignore_index=True)
+
+                wilcoxonarray.append(subwilcoxon/len(subwilcoxon))
 
 test_results = test_results.sort_values(by=['accuracy'])
-test_results = test_results[['Model', 'Number of classificators', 'HardVoting', 'accuracy', 'accuracy std', 'recall', 'recall std', 'precision', 'precision std']]
-print(test_results)
+print(test_results[['Ensemble method', 'Model', 'Number of classificators', 'HardVoting', 'accuracy','accuracy std', 'recall', 'recall std', 'precision', 'precision std']])
+
+#Wilcoxon stats
+
+wilcoxonStat = pd.DataFrame()
+
+for arrayOne in range(len(wilcoxonarray)):
+    for arraySecond in range(arrayOne+1):
+        param_dict = {}
+        stat = 0
+        p = 0
+        score = 0
+        if arrayOne != arraySecond:
+            if not(np.array_equal(wilcoxonarray[arrayOne], wilcoxonarray[arraySecond])):
+                stat, p = wilcoxon(wilcoxonarray[arrayOne], wilcoxonarray[arraySecond])
+                print('Statistics=%.3f, p=%.3f' % (stat, p))
+                alpha = 0.05
+                if p > alpha:
+                    score = "="
+                else:
+                    score = "!"
+            else:
+                stat = "-"
+                p = "-"
+                score = "-"
+
+        param_dict = {
+            'arrayOne': arrayOne,
+            'arratSecond': arraySecond,
+            'stat': stat,
+            'p': p,
+            'wynik': score
+        }
+        wilcoxonStat = wilcoxonStat.append(param_dict, ignore_index=True)
+
+print(wilcoxonStat)
