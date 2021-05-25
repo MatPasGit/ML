@@ -217,8 +217,9 @@ for combination_method in combination_methods:
                     if i == 0:
                         wilcoxon = subwilcoxon[i].copy()
                     else:
-                        wilcoxon = np.concatenate([wilcoxon,subwilcoxon[i]])
-                wilcoxonarray.append(wilcoxon)
+                        wilcoxon = np.add(wilcoxon,subwilcoxon[i])
+                        #wilcoxon = np.concatenate([wilcoxon,subwilcoxon[i]])
+                wilcoxonarray.append(wilcoxon/len(wilcoxon))
 
             
 
@@ -251,7 +252,7 @@ for combination_method in combination_methods:
                         #print(classificatorsList)
 
                         X_train_full, X_test, y_train_full, y_test = train_test_split(
-                            X, y, test_size=0.50, random_state=1234+cross_time)
+                            X, y, test_size=0.50, random_state=1234)
 
                         if cross_page == 1:
                             temp = X_train_full
@@ -439,8 +440,9 @@ for combination_method in combination_methods:
                     if i == 0:
                         wilcoxon = subwilcoxon[i].copy()
                     else:
-                        wilcoxon = np.concatenate([wilcoxon,subwilcoxon[i]])
-                wilcoxonarray.append(wilcoxon)
+                        wilcoxon = np.add(wilcoxon, subwilcoxon[i])
+                        #wilcoxon = np.concatenate([wilcoxon,subwilcoxon[i]])
+                wilcoxonarray.append(wilcoxon/len(wilcoxon))
             
 
 #RANDOM SUBSPACE
@@ -632,8 +634,9 @@ for combination_method in combination_methods:
                     if i == 0:
                         wilcoxon = subwilcoxon[i].copy()
                     else:
-                        wilcoxon = np.concatenate([wilcoxon,subwilcoxon[i]])
-                wilcoxonarray.append(wilcoxon)
+                        wilcoxon = np.add(wilcoxon,subwilcoxon[i])
+                        #wilcoxon = np.concatenate([wilcoxon,subwilcoxon[i]])
+                wilcoxonarray.append(wilcoxon/len(wilcoxon))
             
 
 
