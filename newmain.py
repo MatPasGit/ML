@@ -6,6 +6,12 @@ from sklearn.ensemble import BaseEnsemble
 from sklearn.base import ClassifierMixin, clone
 from sklearn.utils.validation import check_array, check_is_fitted, check_X_y
 
+from sklearn import *
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC  # svm.LinearSVC(dual=False), SVC()
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+
 class RandomSubspaceEnsemble(BaseEnsemble, ClassifierMixin):
     """
     Random subspace ensemble
@@ -103,22 +109,21 @@ n_repeats = 10
 rskf = RepeatedStratifiedKFold(
     n_splits=n_splits, n_repeats=n_repeats, random_state=1234)
 
-clf = RandomSubspaceEnsemble(base_estimator=GaussianNB(
-), n_estimators=10, n_subspace_features=1, hard_voting=True, random_state=123)
-scores = []
-for train, test in rskf.split(X, y):
-    clf.fit(X[train], y[train])
-    y_pred = clf.predict(X[test])
-    scores.append(accuracy_score(y[test], y_pred))
-print("Hard voting - accuracy score: %.3f (%.3f)" %
-      (np.mean(scores), np.std(scores)))
+base_estimators = [GaussianNB(), DecisionTreeClassifier(), KNeighborsClassifier()]
+number_of_classificators = [5, 10, 15]
+combination_methods = [True, False]
 
-clf = RandomSubspaceEnsemble(base_estimator=GaussianNB(
-), n_estimators=10, n_subspace_features=1, hard_voting=False, random_state=123)
-scores = []
-for train, test in rskf.split(X, y):
-    clf.fit(X[train], y[train])
-    y_pred = clf.predict(X[test])
-    scores.append(accuracy_score(y[test], y_pred))
-print("Soft voting - accuracy score: %.3f (%.3f)" %
-      (np.mean(scores), np.std(scores)))
+for base in base_estimators:
+    for number in number_of_classificators:
+        for combination in combination_methods:
+            print(
+                f"{str(base)}, {str(number)}, {str(combination)}")
+
+            clf = RandomSubspaceEnsemble(base_estimator=base, n_estimators=number, n_subspace_features=1, hard_voting=combination, random_state=123)
+            scores = []
+            for train, test in rskf.split(X, y):
+                clf.fit(X[train], y[train])
+                y_pred = clf.predict(X[test])
+                scores.append(accuracy_score(y[test], y_pred))
+            print("Hard voting - accuracy score: %.3f (%.3f)" %
+                (np.mean(scores), np.std(scores)))
