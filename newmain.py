@@ -5,7 +5,6 @@ from sklearn.metrics import accuracy_score, recall_score, precision_score
 from sklearn.ensemble import BaseEnsemble
 from sklearn.base import ClassifierMixin, clone
 from sklearn.utils.validation import check_array, check_is_fitted, check_X_y
-
 from sklearn import *
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC  # svm.LinearSVC(dual=False), SVC()
@@ -94,7 +93,7 @@ ensemble_methods = ["RandomSubspace"] # "Bagging", "Adaboost",
 base_estimators = [GaussianNB(), DecisionTreeClassifier(), KNeighborsClassifier()]
 number_of_classificators = [5, 10, 15]
 combination_methods = ["majority",  "vector"]  # "weighted",
-pd.set_option("display.max_rows", None, "display.max_columns", None)
+#pd.set_option("display.max_rows", None, "display.max_columns", None)
 
 test_results = pd.DataFrame()
 wilcoxonarray = []
@@ -142,7 +141,6 @@ for ensemble_method in ensemble_methods:
 
 
 #Wilcoxon stats
-print(test_results.info())
 wilcoxonStat = pd.DataFrame()
 
 for arrayOne in range(len(wilcoxonarray)):
@@ -150,9 +148,8 @@ for arrayOne in range(len(wilcoxonarray)):
         if arrayOne != arraySecond:
             if not(np.array_equal(wilcoxonarray[arrayOne], wilcoxonarray[arraySecond])):
                 stat, p = wilcoxon(wilcoxonarray[arrayOne], wilcoxonarray[arraySecond])
-                alpha = 0.05
-                if p > alpha:
-                    param_dict = {
+
+                param_dict = {
                         '1. prediction - ensemble': test_results.get('Ensemble method')[arrayOne],
                         '2. prediction - ensemble': test_results.get('Ensemble method')[arraySecond],
                         '1. prediction - model': test_results.get('Model')[arrayOne],
@@ -163,9 +160,14 @@ for arrayOne in range(len(wilcoxonarray)):
                         '2. prediction - voting': test_results.get('Voting')[arraySecond],
                         'stat': stat,
                         'p': p,
-                        'wynik': "="
                     }
-                    wilcoxonStat = wilcoxonStat.append(param_dict, ignore_index=True)
+
+                alpha = 0.05
+                if p > alpha:
+                    param_dict['rozkład'] = 'Taki sam'
+                else:
+                    param_dict['rozkład'] = 'Różny'
+                wilcoxonStat = wilcoxonStat.append(param_dict, ignore_index=True)
 
 
 #Print and save to csv files
@@ -178,8 +180,11 @@ print("Znalezione podobne dystrybuanty:")
 wilcoxonStat = wilcoxonStat.sort_values(by=['p'])
 wilcoxonStat_csv = wilcoxonStat[['1. prediction - ensemble', '2. prediction - ensemble', '1. prediction - model', '1. prediction - number of classificators',
                                  '1. prediction - voting', '2. prediction - model', '2. prediction - number of classificators',
-                                 '2. prediction - voting', 'stat', 'p', 'wynik']]
+                                 '2. prediction - voting', 'stat', 'p', 'rozkład']]
 print(wilcoxonStat_csv)
 
 test_results_csv.to_csv(r'.\test_results.csv', index = False, header=True)
 wilcoxonStat_csv.to_csv(r'.\wilcoxonStat.csv', index = False, header=True)
+
+
+#TODO: Bagging, boosting and ważone głosowanie

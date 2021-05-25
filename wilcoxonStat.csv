@@ -1,17 +1,152 @@
-1. prediction - ensemble,2. prediction - ensemble,1. prediction - model,1. prediction - number of classificators,1. prediction - voting,2. prediction - model,2. prediction - number of classificators,2. prediction - voting,stat,p,wynik
-RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,GaussianNB(),15,majority,1320.0,0.0996682865837564,=
-RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,GaussianNB(),10,majority,2484.0,0.10662103385667683,=
-RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,majority,DecisionTreeClassifier(),10,majority,34138.5,0.10809436705777802,=
-RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,majority,DecisionTreeClassifier(),10,vector,34138.5,0.10809436705777802,=
-RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,vector,DecisionTreeClassifier(),10,majority,34138.5,0.10809436705777802,=
-RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,vector,DecisionTreeClassifier(),10,vector,34138.5,0.10809436705777802,=
-RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,GaussianNB(),15,majority,644.0,0.15212149388422935,=
-RandomSubspace,RandomSubspace,GaussianNB(),15,vector,GaussianNB(),5,vector,0.0,0.15729920705028502,=
-RandomSubspace,RandomSubspace,GaussianNB(),15,vector,GaussianNB(),10,vector,0.0,0.15729920705028502,=
-RandomSubspace,RandomSubspace,DecisionTreeClassifier(),5,vector,DecisionTreeClassifier(),5,majority,0.0,0.15729920705028502,=
-RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,KNeighborsClassifier(),5,vector,2514.5,0.18192622259449343,=
-RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,GaussianNB(),10,majority,2881.5,0.26520539259150755,=
-RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,KNeighborsClassifier(),10,vector,1599.0,0.5875938479556577,=
-RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,majority,GaussianNB(),5,majority,24870.5,0.6564887259201456,=
-RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,vector,GaussianNB(),10,majority,3570.5,0.8586235928346648,=
-RandomSubspace,RandomSubspace,GaussianNB(),10,vector,GaussianNB(),5,vector,5.0,1.0,=
+1. prediction - ensemble,2. prediction - ensemble,1. prediction - model,1. prediction - number of classificators,1. prediction - voting,2. prediction - model,2. prediction - number of classificators,2. prediction - voting,stat,p,rozkład
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),5,vector,GaussianNB(),15,vector,0.0,1.2992794047032903e-99,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),5,majority,GaussianNB(),15,vector,0.0,2.0458224449059953e-99,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),5,vector,GaussianNB(),5,vector,188.5,4.005835710193695e-99,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),5,vector,GaussianNB(),10,vector,188.5,4.005835710193695e-99,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),5,majority,GaussianNB(),10,vector,188.0,6.3002556208241086e-99,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),5,majority,GaussianNB(),5,vector,188.0,6.3002556208241086e-99,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,DecisionTreeClassifier(),5,vector,183.5,1.79123938105028e-96,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,DecisionTreeClassifier(),5,majority,183.0,2.8176576894774617e-96,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,DecisionTreeClassifier(),5,vector,1674.0,2.1027423752893927e-92,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,DecisionTreeClassifier(),5,majority,1669.5,3.2859917756402886e-92,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),5,vector,GaussianNB(),15,majority,3324.0,3.429407252555525e-92,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),5,majority,GaussianNB(),15,majority,3315.5,5.3082783490782316e-92,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,DecisionTreeClassifier(),5,vector,2208.0,9.106402649782346e-91,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,DecisionTreeClassifier(),5,majority,2202.0,1.4155879749313464e-90,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),10,vector,GaussianNB(),15,vector,0.0,1.9527283540756716e-89,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),10,majority,GaussianNB(),15,vector,0.0,1.9527283540756716e-89,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),10,majority,GaussianNB(),10,vector,172.0,3.4031028745658425e-89,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),10,vector,GaussianNB(),10,vector,172.0,3.4031028745658425e-89,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),10,vector,GaussianNB(),5,vector,344.0,7.871025056687102e-89,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),10,majority,GaussianNB(),5,vector,344.0,7.871025056687102e-89,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,vector,GaussianNB(),15,vector,0.0,8.000104466046672e-89,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,majority,GaussianNB(),15,vector,0.0,8.000104466046672e-89,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,vector,GaussianNB(),10,vector,178.5,1.4710932507413462e-88,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,majority,GaussianNB(),10,vector,178.5,1.4710932507413462e-88,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,vector,DecisionTreeClassifier(),5,vector,3162.0,1.586526026183097e-88,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,vector,DecisionTreeClassifier(),5,majority,3153.5,2.4560791126771878e-88,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,majority,GaussianNB(),5,vector,177.5,2.791332987549165e-88,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,vector,GaussianNB(),5,vector,177.5,2.791332987549165e-88,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),5,vector,GaussianNB(),10,majority,4114.0,1.7153413390539035e-87,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),5,majority,GaussianNB(),10,majority,4103.0,2.637355800962345e-87,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,DecisionTreeClassifier(),10,majority,505.5,2.7924373437658474e-86,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,DecisionTreeClassifier(),10,vector,505.5,2.7924373437658474e-86,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,DecisionTreeClassifier(),15,vector,887.5,3.295558480608621e-85,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,DecisionTreeClassifier(),15,majority,887.5,3.295558480608621e-85,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,DecisionTreeClassifier(),10,majority,2792.0,2.0187143523124782e-81,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,DecisionTreeClassifier(),10,vector,2792.0,2.0187143523124782e-81,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),10,vector,GaussianNB(),15,majority,3932.0,1.8512676891022463e-80,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),10,majority,GaussianNB(),15,majority,3932.0,1.8512676891022463e-80,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,majority,GaussianNB(),15,majority,4301.0,8.60097320387638e-80,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,vector,GaussianNB(),15,majority,4301.0,8.60097320387638e-80,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,vector,DecisionTreeClassifier(),10,vector,3520.0,4.1337614365612366e-79,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,vector,DecisionTreeClassifier(),10,majority,3520.0,4.1337614365612366e-79,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,DecisionTreeClassifier(),15,majority,3660.0,6.479819704938571e-79,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,DecisionTreeClassifier(),15,vector,3660.0,6.479819704938571e-79,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,DecisionTreeClassifier(),10,vector,4475.0,7.133938747757252e-79,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,DecisionTreeClassifier(),10,majority,4475.0,7.133938747757252e-79,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,DecisionTreeClassifier(),15,majority,4026.0,1.049669159228881e-77,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,DecisionTreeClassifier(),15,vector,4026.0,1.049669159228881e-77,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),10,vector,GaussianNB(),10,majority,5430.0,1.0309239383201278e-76,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),10,majority,GaussianNB(),10,majority,5430.0,1.0309239383201278e-76,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,vector,DecisionTreeClassifier(),15,vector,4582.0,2.791480499411893e-75,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,vector,DecisionTreeClassifier(),15,majority,4582.0,2.791480499411893e-75,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,majority,GaussianNB(),10,majority,5812.5,1.3663988169230241e-74,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,vector,GaussianNB(),10,majority,5812.5,1.3663988169230241e-74,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,majority,DecisionTreeClassifier(),5,vector,13638.5,2.8655877706956234e-62,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,majority,DecisionTreeClassifier(),5,majority,13604.0,4.227806079127191e-62,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),5,vector,GaussianNB(),5,majority,22696.5,6.54807846837367e-57,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,majority,GaussianNB(),15,vector,0.0,8.746572005146514e-57,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),5,majority,GaussianNB(),5,majority,22642.5,9.273435745461094e-57,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,majority,GaussianNB(),5,vector,0.0,2.3548958109974786e-56,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,majority,GaussianNB(),10,vector,124.5,4.692391805183149e-56,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,KNeighborsClassifier(),5,majority,1380.5,3.148671644207847e-49,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),10,vector,GaussianNB(),5,majority,22703.0,7.673838227106731e-47,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),10,majority,GaussianNB(),5,majority,22703.0,7.673838227106731e-47,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,majority,DecisionTreeClassifier(),10,vector,18349.5,2.379183873474815e-46,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,majority,DecisionTreeClassifier(),10,majority,18349.5,2.379183873474815e-46,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,majority,DecisionTreeClassifier(),5,vector,26142.0,2.4404511050949248e-45,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,majority,DecisionTreeClassifier(),5,majority,26080.0,3.4074113738544805e-45,Różny
+RandomSubspace,RandomSubspace,GaussianNB(),15,vector,GaussianNB(),5,majority,0.0,4.10269192962272e-45,Różny
+RandomSubspace,RandomSubspace,GaussianNB(),5,vector,GaussianNB(),5,majority,0.0,1.1174315887803492e-44,Różny
+RandomSubspace,RandomSubspace,GaussianNB(),10,vector,GaussianNB(),5,majority,0.0,1.1174315887803492e-44,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,majority,GaussianNB(),15,majority,2562.0,2.8178645214513306e-44,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,vector,KNeighborsClassifier(),5,majority,639.0,6.031389648253929e-44,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,KNeighborsClassifier(),5,majority,2375.0,3.840436332148327e-43,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,majority,GaussianNB(),15,vector,0.0,2.906214461283712e-42,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,vector,GaussianNB(),5,majority,23790.5,3.9653067636986954e-42,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,majority,GaussianNB(),5,majority,23790.5,3.9653067636986954e-42,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,majority,GaussianNB(),10,vector,91.5,1.5254663917130817e-41,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,majority,GaussianNB(),5,vector,185.0,2.9494955177341463e-41,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,KNeighborsClassifier(),5,majority,2706.0,1.1785414456740303e-40,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,majority,DecisionTreeClassifier(),15,majority,20075.0,1.5962201456020543e-39,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,majority,DecisionTreeClassifier(),15,vector,20075.0,1.5962201456020543e-39,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,KNeighborsClassifier(),10,majority,1158.0,1.7431885635616893e-35,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,GaussianNB(),5,majority,1899.0,2.9678381394778947e-34,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,majority,DecisionTreeClassifier(),10,vector,26384.0,5.043727098300674e-34,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,majority,DecisionTreeClassifier(),10,majority,26384.0,5.043727098300674e-34,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,KNeighborsClassifier(),10,majority,322.0,7.0544517560425285e-34,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,majority,GaussianNB(),10,majority,6038.5,1.8073592753831883e-33,Różny
+RandomSubspace,RandomSubspace,GaussianNB(),15,majority,GaussianNB(),5,majority,1485.0,2.3421525516126636e-33,Różny
+RandomSubspace,RandomSubspace,GaussianNB(),10,majority,GaussianNB(),5,majority,553.0,2.5444136014879792e-30,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,majority,GaussianNB(),15,majority,2384.5,1.9130443131487206e-29,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,majority,DecisionTreeClassifier(),15,vector,33788.5,4.048851635655704e-27,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,majority,DecisionTreeClassifier(),15,majority,33788.5,4.048851635655704e-27,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,KNeighborsClassifier(),10,majority,2632.5,2.852315164707517e-26,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,GaussianNB(),5,majority,4620.0,1.84396778597547e-24,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,GaussianNB(),5,majority,4368.0,1.0942823160266356e-23,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,vector,GaussianNB(),5,majority,3746.0,6.606708408763062e-22,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,majority,KNeighborsClassifier(),5,vector,3492.0,1.6052352386144103e-21,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,majority,GaussianNB(),10,majority,4472.0,1.0047377714400552e-20,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,vector,GaussianNB(),15,vector,0.0,2.63857934955127e-16,Różny
+RandomSubspace,RandomSubspace,GaussianNB(),15,vector,GaussianNB(),10,majority,0.0,7.272677757534586e-16,Różny
+RandomSubspace,RandomSubspace,GaussianNB(),10,vector,GaussianNB(),10,majority,0.0,7.489807028252661e-16,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,vector,GaussianNB(),5,vector,34.0,1.8436020617325644e-15,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,vector,GaussianNB(),10,vector,70.0,4.4428599468169255e-15,Różny
+RandomSubspace,RandomSubspace,GaussianNB(),10,majority,GaussianNB(),5,vector,68.0,1.2185728023361726e-14,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,GaussianNB(),15,vector,0.0,3.2184222607961584e-13,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,GaussianNB(),15,vector,0.0,1.5374597944280347e-12,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,GaussianNB(),5,vector,56.0,5.199804348118884e-12,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,GaussianNB(),10,vector,56.0,5.199804348118884e-12,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,GaussianNB(),10,vector,53.0,2.8061140954240812e-11,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,GaussianNB(),5,vector,53.0,2.8061140954240812e-11,Różny
+RandomSubspace,RandomSubspace,GaussianNB(),15,vector,GaussianNB(),15,majority,0.0,8.71744415466495e-09,Różny
+RandomSubspace,RandomSubspace,GaussianNB(),15,majority,GaussianNB(),10,vector,0.0,2.432743735024376e-08,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,vector,DecisionTreeClassifier(),5,vector,41400.0,3.781291624308054e-08,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,majority,DecisionTreeClassifier(),5,vector,41400.0,3.781291624308054e-08,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,vector,DecisionTreeClassifier(),5,majority,41307.5,4.6189171609755715e-08,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,majority,DecisionTreeClassifier(),5,majority,41307.5,4.6189171609755715e-08,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,KNeighborsClassifier(),5,vector,408.0,9.268164937119118e-08,Różny
+RandomSubspace,RandomSubspace,GaussianNB(),15,majority,GaussianNB(),5,vector,36.0,1.2623521220604663e-07,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,GaussianNB(),15,vector,0.0,9.633570086430965e-07,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,majority,GaussianNB(),5,majority,14993.5,3.537105565850154e-06,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,GaussianNB(),10,majority,946.0,5.1645278476132385e-06,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,majority,KNeighborsClassifier(),5,majority,12180.5,8.833607091649158e-06,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,GaussianNB(),10,vector,27.0,1.5992473593247368e-05,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,GaussianNB(),5,vector,27.0,1.5992473593247368e-05,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,KNeighborsClassifier(),15,majority,286.0,2.9145891675051222e-05,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),10,majority,DecisionTreeClassifier(),5,vector,47704.0,6.968351637307408e-05,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),10,vector,DecisionTreeClassifier(),5,vector,47704.0,6.968351637307408e-05,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),10,vector,DecisionTreeClassifier(),5,majority,47589.0,7.989973085683542e-05,Różny
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),10,majority,DecisionTreeClassifier(),5,majority,47589.0,7.989973085683542e-05,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,KNeighborsClassifier(),10,vector,235.0,0.00012633749729917362,Różny
+RandomSubspace,RandomSubspace,GaussianNB(),15,majority,GaussianNB(),10,majority,1037.5,0.0004096172279005818,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,vector,GaussianNB(),15,majority,1552.0,0.0006738585313537617,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,KNeighborsClassifier(),5,vector,999.0,0.026163128712073425,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,GaussianNB(),15,majority,1445.5,0.03715332239050356,Różny
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,GaussianNB(),15,majority,1320.0,0.0996682865837564,Taki sam
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,GaussianNB(),10,majority,2484.0,0.10662103385667683,Taki sam
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,majority,DecisionTreeClassifier(),10,majority,34138.5,0.10809436705777802,Taki sam
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,majority,DecisionTreeClassifier(),10,vector,34138.5,0.10809436705777802,Taki sam
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,vector,DecisionTreeClassifier(),10,majority,34138.5,0.10809436705777802,Taki sam
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,vector,DecisionTreeClassifier(),10,vector,34138.5,0.10809436705777802,Taki sam
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,GaussianNB(),15,majority,644.0,0.15212149388422935,Taki sam
+RandomSubspace,RandomSubspace,GaussianNB(),15,vector,GaussianNB(),10,vector,0.0,0.15729920705028502,Taki sam
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),5,vector,DecisionTreeClassifier(),5,majority,0.0,0.15729920705028502,Taki sam
+RandomSubspace,RandomSubspace,GaussianNB(),15,vector,GaussianNB(),5,vector,0.0,0.15729920705028502,Taki sam
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,KNeighborsClassifier(),5,vector,2514.5,0.18192622259449343,Taki sam
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,GaussianNB(),10,majority,2881.5,0.26520539259150755,Taki sam
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,KNeighborsClassifier(),10,vector,1599.0,0.5875938479556577,Taki sam
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,majority,GaussianNB(),5,majority,24870.5,0.6564887259201456,Taki sam
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,vector,GaussianNB(),10,majority,3570.5,0.8586235928346648,Taki sam
+RandomSubspace,RandomSubspace,GaussianNB(),10,vector,GaussianNB(),5,vector,5.0,1.0,Taki sam
