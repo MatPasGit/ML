@@ -1,0 +1,17 @@
+1. prediction - ensemble,2. prediction - ensemble,1. prediction - model,1. prediction - number of classificators,1. prediction - voting,2. prediction - model,2. prediction - number of classificators,2. prediction - voting,stat,p,wynik
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,GaussianNB(),15,majority,1320.0,0.0996682865837564,=
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,vector,GaussianNB(),10,majority,2484.0,0.10662103385667683,=
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,majority,DecisionTreeClassifier(),10,majority,34138.5,0.10809436705777802,=
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,majority,DecisionTreeClassifier(),10,vector,34138.5,0.10809436705777802,=
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,vector,DecisionTreeClassifier(),10,majority,34138.5,0.10809436705777802,=
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),15,vector,DecisionTreeClassifier(),10,vector,34138.5,0.10809436705777802,=
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,vector,GaussianNB(),15,majority,644.0,0.15212149388422935,=
+RandomSubspace,RandomSubspace,GaussianNB(),15,vector,GaussianNB(),5,vector,0.0,0.15729920705028502,=
+RandomSubspace,RandomSubspace,GaussianNB(),15,vector,GaussianNB(),10,vector,0.0,0.15729920705028502,=
+RandomSubspace,RandomSubspace,DecisionTreeClassifier(),5,vector,DecisionTreeClassifier(),5,majority,0.0,0.15729920705028502,=
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,KNeighborsClassifier(),5,vector,2514.5,0.18192622259449343,=
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,GaussianNB(),10,majority,2881.5,0.26520539259150755,=
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),15,majority,KNeighborsClassifier(),10,vector,1599.0,0.5875938479556577,=
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),10,majority,GaussianNB(),5,majority,24870.5,0.6564887259201456,=
+RandomSubspace,RandomSubspace,KNeighborsClassifier(),5,vector,GaussianNB(),10,majority,3570.5,0.8586235928346648,=
+RandomSubspace,RandomSubspace,GaussianNB(),10,vector,GaussianNB(),5,vector,5.0,1.0,=

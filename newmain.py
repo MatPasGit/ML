@@ -94,6 +94,7 @@ ensemble_methods = ["RandomSubspace"] # "Bagging", "Adaboost",
 base_estimators = [GaussianNB(), DecisionTreeClassifier(), KNeighborsClassifier()]
 number_of_classificators = [5, 10, 15]
 combination_methods = ["majority",  "vector"]  # "weighted",
+pd.set_option("display.max_rows", None, "display.max_columns", None)
 
 test_results = pd.DataFrame()
 wilcoxonarray = []
@@ -128,7 +129,7 @@ for ensemble_method in ensemble_methods:
                     'Ensemble method': str(ensemble_method),
                     'Model': str(base),
                     'Number of classificators': str(number),
-                    'HardVoting': str(combination),
+                    'Voting': str(combination),
                     'accuracy': round(np.mean(scores, axis=0)[0], 4),
                     'accuracy std': "("+str(round(np.std(scores, axis=0)[0], 4))+")",
                     'recall': round(np.mean(scores, axis=0)[1], 4),
@@ -139,40 +140,46 @@ for ensemble_method in ensemble_methods:
 
                 wilcoxonarray.append(subwilcoxon/len(subwilcoxon))
 
-test_results = test_results.sort_values(by=['accuracy'])
-print(test_results[['Ensemble method', 'Model', 'Number of classificators', 'HardVoting', 'accuracy','accuracy std', 'recall', 'recall std', 'precision', 'precision std']])
 
 #Wilcoxon stats
-
+print(test_results.info())
 wilcoxonStat = pd.DataFrame()
 
 for arrayOne in range(len(wilcoxonarray)):
     for arraySecond in range(arrayOne+1):
-        param_dict = {}
-        stat = 0
-        p = 0
-        score = 0
         if arrayOne != arraySecond:
             if not(np.array_equal(wilcoxonarray[arrayOne], wilcoxonarray[arraySecond])):
                 stat, p = wilcoxon(wilcoxonarray[arrayOne], wilcoxonarray[arraySecond])
-                print('Statistics=%.3f, p=%.3f' % (stat, p))
                 alpha = 0.05
                 if p > alpha:
-                    score = "="
-                else:
-                    score = "!"
-            else:
-                stat = "-"
-                p = "-"
-                score = "-"
+                    param_dict = {
+                        '1. prediction - ensemble': test_results.get('Ensemble method')[arrayOne],
+                        '2. prediction - ensemble': test_results.get('Ensemble method')[arraySecond],
+                        '1. prediction - model': test_results.get('Model')[arrayOne],
+                        '2. prediction - model': test_results.get('Model')[arraySecond],
+                        '1. prediction - number of classificators': test_results.get('Number of classificators')[arrayOne],
+                        '2. prediction - number of classificators': test_results.get('Number of classificators')[arraySecond],
+                        '1. prediction - voting': test_results.get('Voting')[arrayOne],
+                        '2. prediction - voting': test_results.get('Voting')[arraySecond],
+                        'stat': stat,
+                        'p': p,
+                        'wynik': "="
+                    }
+                    wilcoxonStat = wilcoxonStat.append(param_dict, ignore_index=True)
 
-        param_dict = {
-            'arrayOne': arrayOne,
-            'arratSecond': arraySecond,
-            'stat': stat,
-            'p': p,
-            'wynik': score
-        }
-        wilcoxonStat = wilcoxonStat.append(param_dict, ignore_index=True)
 
-print(wilcoxonStat)
+#Print and save to csv files
+test_results = test_results.sort_values(by=['accuracy'])
+test_results_csv = test_results[['Ensemble method', 'Model', 'Number of classificators', 'Voting',
+                                 'accuracy', 'accuracy std', 'recall', 'recall std', 'precision', 'precision std']]
+print(test_results_csv)
+
+print("Znalezione podobne dystrybuanty:")
+wilcoxonStat = wilcoxonStat.sort_values(by=['p'])
+wilcoxonStat_csv = wilcoxonStat[['1. prediction - ensemble', '2. prediction - ensemble', '1. prediction - model', '1. prediction - number of classificators',
+                                 '1. prediction - voting', '2. prediction - model', '2. prediction - number of classificators',
+                                 '2. prediction - voting', 'stat', 'p', 'wynik']]
+print(wilcoxonStat_csv)
+
+test_results_csv.to_csv(r'.\test_results.csv', index = False, header=True)
+wilcoxonStat_csv.to_csv(r'.\wilcoxonStat.csv', index = False, header=True)
