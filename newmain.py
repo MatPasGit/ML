@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import RepeatedStratifiedKFold
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, recall_score, precision_score
 from sklearn.ensemble import BaseEnsemble
 from sklearn.base import ClassifierMixin, clone
 from sklearn.utils.validation import check_array, check_is_fitted, check_X_y
@@ -11,6 +11,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC  # svm.LinearSVC(dual=False), SVC()
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
+import pandas as pd
 
 class RandomSubspaceEnsemble(BaseEnsemble, ClassifierMixin):
     """
@@ -113,6 +114,8 @@ base_estimators = [GaussianNB(), DecisionTreeClassifier(), KNeighborsClassifier(
 number_of_classificators = [5, 10, 15]
 combination_methods = [True, False]
 
+test_results = pd.DataFrame()
+
 for base in base_estimators:
     for number in number_of_classificators:
         for combination in combination_methods:
@@ -120,10 +123,30 @@ for base in base_estimators:
                 f"{str(base)}, {str(number)}, {str(combination)}")
 
             clf = RandomSubspaceEnsemble(base_estimator=base, n_estimators=number, n_subspace_features=1, hard_voting=combination, random_state=123)
-            scores = []
+            scoresaccuracy = []
+            scoresrecall = []
+            scoresprecision = []
             for train, test in rskf.split(X, y):
                 clf.fit(X[train], y[train])
                 y_pred = clf.predict(X[test])
-                scores.append(accuracy_score(y[test], y_pred))
-            print("Hard voting - accuracy score: %.3f (%.3f)" %
-                (np.mean(scores), np.std(scores)))
+                scoresaccuracy.append(accuracy_score(y[test], y_pred))
+                scoresrecall.append(recall_score(y[test], y_pred))
+                scoresprecision.append(precision_score(y[test], y_pred, average='weighted', labels=np.unique(y_pred)))
+            print("Hard voting - accuracy score: %.3f (%.3f)" %(np.mean(scoresaccuracy), np.std(scoresaccuracy)))
+
+            param_dict = {
+                'Model': str(base),
+                'Number of classificators': str(number),
+                'HardVoting': str(combination),
+                'accuracy': np.mean(scoresaccuracy),
+                'accuracy std': np.std(scoresaccuracy),
+                'recall': np.mean(scoresrecall),
+                'recall std': np.std(scoresrecall),
+                'precision': np.mean(scoresprecision),
+                'precision std': np.std(scoresprecision)
+            }
+            test_results = test_results.append(param_dict, ignore_index=True)
+
+test_results = test_results.sort_values(by=['accuracy'])
+test_results = test_results[['Model', 'Number of classificators', 'HardVoting', 'accuracy', 'accuracy std', 'recall', 'recall std', 'precision', 'precision std']]
+print(test_results)
