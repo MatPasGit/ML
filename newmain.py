@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.naive_bayes import GaussianNB
-from sklearn.model_selection import RepeatedStratifiedKFold
+from sklearn.model_selection import RepeatedStratifiedKFold, train_test_split
 from sklearn.metrics import accuracy_score, recall_score, precision_score
 from sklearn.ensemble import BaseEnsemble
 from sklearn.base import ClassifierMixin, clone
@@ -12,6 +12,8 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from scipy.stats import wilcoxon
 import pandas as pd
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
 
 class EnsembleModel(BaseEnsemble, ClassifierMixin):
 
@@ -22,6 +24,7 @@ class EnsembleModel(BaseEnsemble, ClassifierMixin):
         self.n_subspace_features = n_subspace_features
         self.voting = voting
         self.random_state = random_state
+        self.classificators_weights = np.ones((n_estimators,), dtype=int)
         np.random.seed(self.random_state)
 
     def fit(self, X, y):
@@ -29,50 +32,92 @@ class EnsembleModel(BaseEnsemble, ClassifierMixin):
         self.classes_ = np.unique(y)
 
         #Random Subspace
-        self.n_features = X.shape[1]
-        if self.n_subspace_features > self.n_features:
-            raise ValueError(
-                "Number of features in subspace higher than number of features.")
+        if ensemble_method == "RandomSubspace":
 
-        self.subspaces = np.random.randint(
-            0, self.n_features, (self.n_estimators, self.n_subspace_features))
+            self.n_features = X.shape[1]
+            if self.n_subspace_features > self.n_features:
+                raise ValueError(
+                    "Number of features in subspace higher than number of features.")
 
-        self.ensemble_ = []
-        for i in range(self.n_estimators):
-            self.ensemble_.append(
-                clone(self.base_estimator).fit(X[:, self.subspaces[i]], y))
+            self.subspaces = np.random.randint(
+                0, self.n_features, (self.n_estimators, self.n_subspace_features))
+
+            self.ensemble_ = []
+            for i in range(self.n_estimators):
+                self.ensemble_.append(
+                    clone(self.base_estimator).fit(X[:, self.subspaces[i]], y))
+
+        elif ensemble_method == "Bagging":
+            self.ensemble_ = []
+            for i in range(self.n_estimators):
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.75, random_state=1234+i)
+                self.ensemble_.append(clone(self.base_estimator).fit(X_train, y_train))
 
         return self
+
+    def predictweight(self, X_val, y_val):
+        weights = []
+        for i, member_clf in enumerate(self.ensemble_):
+            if self.ensemble_method == "RandomSubspace":
+                y_pred = member_clf.predict(X_val[:, self.subspaces[i]])
+            else:
+                y_pred = member_clf.predict(X_val)
+            weights.append(accuracy_score(y_val, y_pred))
+        self.classificators_weights = weights.copy()
+
+
 
     def predict(self, X):
         check_is_fitted(self, "classes_")
         X = check_array(X)
-        if X.shape[1] != self.n_features:
-            raise ValueError("number of features does not match")
 
-        if self.voting == "majority":
+        if self.ensemble_method == "RandomSubspace":
+            if X.shape[1] != self.n_features:
+                raise ValueError("number of features does not match")
+
+        if self.voting == "vector":
+            esm = self.ensemble_support_matrix(X)
+            average_support = np.mean(esm, axis=0)
+            prediction = np.argmax(average_support, axis=1)
+            return self.classes_[prediction]
+        else: #majority and weighted
             pred_ = []
             for i, member_clf in enumerate(self.ensemble_):
-                pred_.append(member_clf.predict(X[:, self.subspaces[i]]))
+                if self.ensemble_method == "RandomSubspace":
+                    pred_.append(member_clf.predict(X[:, self.subspaces[i]]))
+                else:
+                    pred_.append(member_clf.predict(X))
             pred_ = np.array(pred_)
-            prediction = np.apply_along_axis(
-                lambda x: np.argmax(np.bincount(x)), axis=1, arr=pred_.T)
-            return self.classes_[prediction]
-        elif self.voting == "vector":
-            esm = self.ensemble_support_matrix(X)
-            average_support = np.mean(esm, axis=0)
-            prediction = np.argmax(average_support, axis=1)
-            return self.classes_[prediction]
-        else: #TODO weighted
-            esm = self.ensemble_support_matrix(X)
-            average_support = np.mean(esm, axis=0)
-            prediction = np.argmax(average_support, axis=1)
+
+            weightArray = []
+            for i in set(y):
+                weightArray.append([i, 0])
+
+            prediction = []
+            for j in range(len(pred_[0])):
+                for i in range(len(pred_)):
+                    for k in weightArray:
+                        if (k[0] == pred_[i][j]):
+                            k[1] += self.classificators_weights[i]
+                maxvalue = 0
+                maxclass = 0
+                for k in weightArray:
+                    if k[1] > maxvalue:
+                        maxclass = k[0]
+                        maxvalue = k[1]
+                    k[1] = 0
+                prediction.append(maxclass)
+            #prediction = np.apply_along_axis(lambda x: np.argmax(np.bincount(x)), axis=1, arr=pred_.T)
+
             return self.classes_[prediction]
 
     def ensemble_support_matrix(self, X):
         probas_ = []
         for i, member_clf in enumerate(self.ensemble_):
-            probas_.append(member_clf.predict_proba(X[:, self.subspaces[i]]))
+            if self.ensemble_method == "RandomSubspace":
+                probas_.append(member_clf.predict_proba(X[:, self.subspaces[i]]))
+            else:
+                probas_.append(member_clf.predict_proba(X))
         return np.array(probas_)
 
 
@@ -89,10 +134,10 @@ n_repeats = 5
 rskf = RepeatedStratifiedKFold(
     n_splits=n_splits, n_repeats=n_repeats, random_state=1234)
 
-ensemble_methods = ["RandomSubspace"] # "Bagging", "Adaboost",
+ensemble_methods = ["RandomSubspace", "Bagging"]  # "Adaboost",
 base_estimators = [GaussianNB(), DecisionTreeClassifier(), KNeighborsClassifier()]
 number_of_classificators = [5, 10, 15]
-combination_methods = ["majority",  "vector"]  # "weighted",
+combination_methods = ["majority",  "vector", "weighted"]
 #pd.set_option("display.max_rows", None, "display.max_columns", None)
 
 test_results = pd.DataFrame()
@@ -109,6 +154,12 @@ for ensemble_method in ensemble_methods:
                 first = True
 
                 for train, test in rskf.split(X, y):
+
+                    #Ustalenie wag klasyfikatorów
+                    if combination == "weighted":
+                        X_train, X_val, y_train, y_val = train_test_split(X[train], y[train], test_size=0.50, random_state=1234)
+                        clf.fit(X_train, y_train)
+                        clf.predictweight(X_val, y_val)
                     clf.fit(X[train], y[train])
                     y_pred = clf.predict(X[test])
 
