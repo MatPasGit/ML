@@ -14,6 +14,7 @@ from scipy.stats import wilcoxon
 import pandas as pd
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
+from scipy.stats import rankdata
 
 class BaggingEnsembleModel(BaseEnsemble, ClassifierMixin):
 
@@ -23,12 +24,10 @@ class BaggingEnsembleModel(BaseEnsemble, ClassifierMixin):
         self.voting = voting
         self.random_state = random_state
         self.classificators_weights = np.ones((n_estimators,), dtype=int)
-        self.accuracy_array = np.zeros((n_estimators))
         np.random.seed(self.random_state)
 
     def fitmain(self, X, y):
         #Ustalenie wag klasyfikatorów w przypadku głosownaia ważonego
-        self.accuracy_array = np.zeros((self.n_estimators))
         if self.voting == "weighted":
             X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.50, random_state=1234)
             self.fit(X_train, y_train)
@@ -56,9 +55,6 @@ class BaggingEnsembleModel(BaseEnsemble, ClassifierMixin):
     def predict(self, X, y):
         check_is_fitted(self, "classes_")
         X = check_array(X)
-
-        for i, member_clf in enumerate(self.ensemble_):
-            self.accuracy_array[i] = accuracy_score(y, member_clf.predict(X))
 
         if self.voting == "vector":
             esm = self.ensemble_support_matrix(X)
@@ -107,12 +103,10 @@ class AdaboostEnsembleModel(BaseEnsemble, ClassifierMixin):
         self.voting = voting
         self.random_state = random_state
         self.classificators_weights = np.ones((n_estimators,), dtype=int)
-        self.accuracy_array = np.zeros((n_estimators))
         np.random.seed(self.random_state)
 
     def fitmain(self, X, y):
         #Ustalenie wag klasyfikatorów w przypadku głosownaia ważonego
-        self.accuracy_array = np.zeros((self.n_estimators))
         if self.voting == "weighted":
             X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.50, random_state=1234)
             self.fit(X_train, y_train)
@@ -157,9 +151,6 @@ class AdaboostEnsembleModel(BaseEnsemble, ClassifierMixin):
     def predict(self, X, y):
         check_is_fitted(self, "classes_")
         X = check_array(X)
-
-        for i, member_clf in enumerate(self.ensemble_):
-            self.accuracy_array[i] = accuracy_score(y, member_clf.predict(X))
 
         if self.voting == "vector":
             esm = self.ensemble_support_matrix(X)
@@ -209,12 +200,10 @@ class RandomSubspaceEnsembleModel(BaseEnsemble, ClassifierMixin):
         self.voting = voting
         self.random_state = random_state
         self.classificators_weights = np.ones((n_estimators,), dtype=int)
-        self.accuracy_array = np.zeros((n_estimators))
         np.random.seed(self.random_state)
 
     def fitmain(self, X, y):
         #Ustalenie wag klasyfikatorów w przypadku głosownaia ważonego
-        self.accuracy_array = np.zeros((self.n_estimators))
         if self.voting == "weighted":
             X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.50, random_state=1234)
             self.fit(X_train, y_train)
@@ -252,9 +241,6 @@ class RandomSubspaceEnsembleModel(BaseEnsemble, ClassifierMixin):
 
         if X.shape[1] != self.n_features:
             raise ValueError("number of features does not match")
-
-        for i, member_clf in enumerate(self.ensemble_):
-            self.accuracy_array[i] = accuracy_score(y, member_clf.predict(X[:, self.subspaces[i]]))
 
         if self.voting == "vector":
             esm = self.ensemble_support_matrix(X)
@@ -301,8 +287,6 @@ dataset = np.genfromtxt("datasets/%s" % (dataset), delimiter=",")
 X = dataset[1:, :-1]
 y = dataset[1:, -1].astype(int)
 
-print("Total number of features", X.shape[1])
-
 n_splits = 2
 n_repeats = 5
 rskf = RepeatedStratifiedKFold(n_splits=n_splits, n_repeats=n_repeats, random_state=1234)
@@ -311,17 +295,17 @@ ensemble_methods = ["Adaboost","RandomSubspace", "Bagging"]
 base_estimators = [GaussianNB(), DecisionTreeClassifier(), KNeighborsClassifier()]
 number_of_classificators = [10]
 combination_methods = ["majority",  "vector", "weighted"]
-#pd.set_option("display.max_rows", None, "display.max_columns", None)
 
 test_results = pd.DataFrame()
-wilcoxonarray = np.zeros((len(ensemble_methods), len(base_estimators), len(combination_methods), n_splits * n_repeats, 10))
+
+wilcoxonAdaboost = np.zeros(((len(base_estimators)-1)*len(combination_methods), n_splits * n_repeats))
+wilcoxonRandomSubspace = np.zeros((len(base_estimators)*len(combination_methods), n_splits * n_repeats))
+wilcoxonBagging = np.zeros((len(base_estimators)*len(combination_methods), n_splits * n_repeats))
 
 for ensemble_method in range(len(ensemble_methods)):
     for base in range(len(base_estimators)):
-
         if ensemble_methods[ensemble_method] == "Adaboost" and isinstance(base_estimators[base], KNeighborsClassifier):
             continue
-
         for number in number_of_classificators:
             for combination in range(len(combination_methods)):
 
@@ -341,9 +325,12 @@ for ensemble_method in range(len(ensemble_methods)):
                     clf.fitmain(X[train], y[train])
                     y_pred = clf.predict(X[test], y[test])
 
-                    for k in range(10):
-                        wilcoxonarray[ensemble_method, base, combination, fold_id, k] = clf.accuracy_array[k]
-
+                    if ensemble_methods[ensemble_method] == "RandomSubspace":
+                            wilcoxonRandomSubspace[len(base_estimators)*base+combination, fold_id] = accuracy_score(y[test], y_pred)
+                    if ensemble_methods[ensemble_method] == "Bagging":
+                            wilcoxonBagging[len(base_estimators)*base+combination, fold_id] = accuracy_score(y[test], y_pred)
+                    if ensemble_methods[ensemble_method] == "Adaboost":
+                            wilcoxonAdaboost[len(base_estimators)*base+combination, fold_id] = accuracy_score(y[test], y_pred)
 
                     scores.append([accuracy_score(y[test], y_pred), 
                                 recall_score(y[test], y_pred),
@@ -364,41 +351,17 @@ for ensemble_method in range(len(ensemble_methods)):
                     'precision std': "("+str(round(np.std(scores, axis=0)[2], 4))+")"
                 }, ignore_index=True)
 
-mean_scores = np.mean(wilcoxonarray, axis=3)
-print("\nMean scores:\n", mean_scores)
-print("\nMean scores shape:\n", mean_scores.shape)
+mean_scores_RandomSubspace = np.mean(wilcoxonRandomSubspace, axis=1).T
+print("\nMean scores:\n", mean_scores_RandomSubspace)
+print("\nMean scores shape:\n", mean_scores_RandomSubspace.shape)
 
+mean_scores_Bagging = np.mean(wilcoxonBagging, axis=1).T
+print("\nMean scores:\n", mean_scores_Bagging)
+print("\nMean scores shape:\n", mean_scores_Bagging.shape)
 
-
-#Wilcoxon stats
-# wilcoxonStat = pd.DataFrame()
-
-# for arrayOne in range(len(wilcoxonarray)):
-#     for arraySecond in range(arrayOne+1):
-#         if arrayOne != arraySecond:
-#             if not(np.array_equal(wilcoxonarray[arrayOne], wilcoxonarray[arraySecond])):
-#                 stat, p = wilcoxon(wilcoxonarray[arrayOne], wilcoxonarray[arraySecond])
-
-#                 param_dict = {
-#                         '1. prediction - ensemble': test_results.get('Ensemble method')[arrayOne],
-#                         '2. prediction - ensemble': test_results.get('Ensemble method')[arraySecond],
-#                         '1. prediction - model': test_results.get('Model')[arrayOne],
-#                         '2. prediction - model': test_results.get('Model')[arraySecond],
-#                         '1. prediction - number of classificators': test_results.get('Number of classificators')[arrayOne],
-#                         '2. prediction - number of classificators': test_results.get('Number of classificators')[arraySecond],
-#                         '1. prediction - voting': test_results.get('Voting')[arrayOne],
-#                         '2. prediction - voting': test_results.get('Voting')[arraySecond],
-#                         'stat': stat,
-#                         'p': p,
-#                     }
-
-#                 alpha = 0.05
-#                 if p > alpha:
-#                     param_dict['rozkład'] = 'Taki sam'
-#                 else:
-#                     param_dict['rozkład'] = 'Różny'
-#                 wilcoxonStat = wilcoxonStat.append(param_dict, ignore_index=True)
-
+mean_scores_Adaboost = np.mean(wilcoxonAdaboost, axis=1).T
+print("\nMean scores:\n", mean_scores_Adaboost)
+print("\nMean scores shape:\n", mean_scores_Adaboost.shape)
 
 #Print and save to csv files
 test_results = test_results.sort_values(by=['accuracy'])
@@ -406,15 +369,3 @@ test_results_csv = test_results[['Ensemble method', 'Model', 'Number of classifi
                                  'accuracy', 'accuracy std', 'recall', 'recall std', 'precision', 'precision std']]
 print(test_results_csv)
 test_results_csv.to_csv(r'.\test_results.csv', index = False, header=True)
-
-
-# print("Znalezione podobne dystrybuanty:")
-# wilcoxonStat = wilcoxonStat.sort_values(by=['p'])
-# wilcoxonStat_csv = wilcoxonStat[['1. prediction - ensemble', '2. prediction - ensemble', '1. prediction - model', '1. prediction - number of classificators',
-#                                  '1. prediction - voting', '2. prediction - model', '2. prediction - number of classificators',
-#                                  '2. prediction - voting', 'stat', 'p', 'rozkład']]
-# print(wilcoxonStat_csv)
-# wilcoxonStat_csv.to_csv(r'.\wilcoxonStat.csv', index = False, header=True)
-
-
-#TODO: Adaboost
