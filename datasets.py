@@ -1,4 +1,8 @@
+import re
+
 import pandas as pd
+import stopwords as stopwords
+
 
 def mobilepriceClassification():
 
@@ -151,4 +155,110 @@ def employee_satisfaction(): #15
     print(X.head())
     print(y.head())
     return X, y
-employee_satisfaction()
+
+
+def server_logs(): #16
+    X = pd.read_csv('datasets/serverlogs/CIDDS-001-external-week1.csv')
+    X[" income"].replace({"suspicious": "1", "normal": "0"},inplace=True)
+    X.drop(["record"], axis='columns', inplace=True)
+    X.dropna(how='all')
+    y = X["class"]
+    X.drop(["class"], axis='columns', inplace=True)
+    print(X.head())
+    print(y.head())
+    return X, y
+
+
+def fake_news(): #17
+    X = pd.read_csv('datasets/fakenews/FA-KES-Dataset.csv')
+    y = X["labels"]
+    X.drop(["labels"], axis='columns', inplace=True)
+    #print(X.head())
+    X["article_content"] = X["article_content"].str.replace(r'\W', " ")
+    X["article_content"] = X["article_content"].str.replace(r'\n', "")
+    X["article_content"] = X["article_content"].str.replace(r' +', " ")
+    X["article_content"] = X["article_content"].str.replace(r'^ ', "")
+    X["article_content"] = X["article_content"].str.replace(r' $', "")
+    X["article_content"] = X["article_content"].str.replace(r',', "")
+    X["article_content"] = X["article_content"].str.replace(r'-', "")
+
+    #print(X.head())
+    #print(y.head())
+    return X, y
+
+def server_logs(): #18
+    X = pd.read_csv('datasets/serverlogs/CIDDS-001-external-week1.csv')
+    X[" income"].replace({"suspicious": "1", "normal": "0"},inplace=True)
+    X.drop(["record"], axis='columns', inplace=True)
+    X.dropna(how='all')
+    y = X["class"]
+    X.drop(["class"], axis='columns', inplace=True)
+    print(X.head())
+    print(y.head())
+    return X, y
+
+def disease(): #19
+    data = pd.read_csv('datasets/disease/dataset.csv')
+    severity = pd.read_csv('datasets/disease/Symptom-severity.csv')
+    cols = [i for i in data.iloc[:, 1:].columns]
+    tmp = pd.melt(data.reset_index(), id_vars=['index'], value_vars=cols)
+    tmp['add1'] = 1
+    tmp.head()
+    X = pd.pivot_table(tmp, values='add1',index='index',columns='value')
+    X.insert(0, 'label', data['Disease'])
+    X = X.fillna(0)
+    y = X["label"]
+    X.drop(["label"], axis='columns', inplace=True)
+    #print(X.head())
+    #print(y.head())
+    return X, y
+
+
+
+def stocks14():
+    stock =pd.read_csv('datasets/usstocks/2014_Financial_Data.csv')
+    stock.dropna(how='all')
+    y = stock["Class"]
+    stock.drop(["Class"], axis='columns', inplace=True)
+    print(stock.head())
+    print(y.head())
+    return stock, y
+
+def stocks15():
+    stock =pd.read_csv('datasets/usstocks/2015_Financial_Data.csv')
+    stock.dropna(how='all')
+    y = stock["Class"]
+    stock.drop(["Class"], axis='columns', inplace=True)
+    print(stock.head())
+    print(y.head())
+    return stock, y
+
+def stocks16():
+    stock =pd.read_csv('datasets/usstocks/2016_Financial_Data.csv')
+    stock.dropna(how='all')
+    y = stock["Class"]
+    stock.drop(["Class"], axis='columns', inplace=True)
+    print(stock.head())
+    print(y.head())
+    return stock, y
+
+def stocks17():
+    stock =pd.read_csv('datasets/usstocks/2017_Financial_Data.csv')
+    stock.dropna(how='all')
+    y = stock["Class"]
+    stock.drop(["Class"], axis='columns', inplace=True)
+    print(stock.head())
+    print(y.head())
+    return stock, y
+
+def stocks18():
+    stock =pd.read_csv('datasets/usstocks/2018_Financial_Data.csv')
+    stock.dropna(how='all')
+    y = stock["Class"]
+    stock.drop(["Class"], axis='columns', inplace=True)
+    print(stock.head())
+    print(y.head())
+    return stock, y
+
+
+
