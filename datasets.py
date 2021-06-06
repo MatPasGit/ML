@@ -105,4 +105,50 @@ def wine_qual():
     print(y.head())
     return X, y
 
-wine_qual()
+def heart():
+    X = pd.read_csv('datasets/1/heart.csv')
+    X.dropna(how='all')
+    y = X["target"]
+    X.drop(["target"], axis='columns', inplace=True)
+    print(X.head())
+    print(y.head())
+    return X, y
+
+def bancrupcy():
+    X = pd.read_csv('datasets/bancrupcy/data.csv')
+    X.dropna(how='all')
+    y = X["Bankrupt?"]
+    X.drop(["Bankrupt?"], axis='columns', inplace=True)
+    print(X.head())
+    print(y.head())
+    return X, y
+
+def contraceptive():
+    X = pd.read_csv('datasets/contraceptive/contraceptive.csv')
+    X.dropna(how='all')
+    y = X["Contraceptive_method"]
+    X.drop(["Contraceptive_method"], axis='columns', inplace=True)
+    print(X.head())
+    print(y.head())
+    return X, y
+
+def employee_attrition(): #14
+    X = pd.read_csv('datasets/employee-attrition/employee_attrition_train.csv')
+    X.dropna(how='all')
+    X["Attrition"].replace({"No": "0", "Yes": "1"}, inplace=True)
+    y = X["Attrition"]
+    X.drop(["Attrition"], axis='columns', inplace=True)
+    print(X.head())
+    print(y.head())
+    return X, y
+
+def employee_satisfaction(): #15
+    X = pd.read_csv('datasets/employee-satisfaction/Employee Satisfaction Index.csv')
+    X.drop(["record"], axis='columns', inplace=True)
+    X.dropna(how='all')
+    y = X["satisfied"]
+    X.drop(["satisfied"], axis='columns', inplace=True)
+    print(X.head())
+    print(y.head())
+    return X, y
+employee_satisfaction()
