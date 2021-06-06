@@ -1,18 +1,4 @@
-@relation magic
-@attribute FLength real [4.2835, 334.177]
-@attribute FWidth real [0.0, 256.382]
-@attribute FSize real [1.9413, 5.3233]
-@attribute FConc real [0.0131, 0.893]
-@attribute FConc1 real [3.0E-4, 0.6752]
-@attribute FAsym real [-457.9161, 575.2407]
-@attribute FM3Long real [-331.78, 238.321]
-@attribute FM3Trans real [-205.8947, 179.851]
-@attribute FAlpha real [0.0, 90.0]
-@attribute FDist real [1.2826, 495.561]
-@attribute Class {g, h}
-@inputs FLength, FWidth, FSize, FConc, FConc1, FAsym, FM3Long, FM3Trans, FAlpha, FDist
-@outputs Class
-@data
+FLength, FWidth, FSize, FConc, FConc1, FAsym, FM3Long, FM3Trans, FAlpha, FDist,Class
 28.7967,16.0021,2.6449,0.3918,0.1982,27.7004,22.011,-8.2027,40.092,81.8828,g
 31.6036,11.7235,2.5185,0.5303,0.3773,26.2722,23.8238,-9.9574,6.3609,205.261,g
 162.052,136.031,4.0612,0.0374,0.0187,116.741,-64.858,-45.216,76.96,256.788,g

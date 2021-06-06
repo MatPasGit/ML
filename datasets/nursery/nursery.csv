@@ -1,16 +1,4 @@
-@relation nursery
-@attribute Parents {pretentious, great_pret, usual}
-@attribute Has_nurs {critical, very_crit, less_proper, proper, improper}
-@attribute Form {incomplete, foster, completed, complete}
-@attribute Children {1, 3, more, 2}
-@attribute Housing {critical, less_conv, convenient}
-@attribute Finance {inconv, convenient}
-@attribute Social {problematic, nonprob, slightly_prob}
-@attribute Health {priority, not_recom, recommended}
-@attribute Class {recommend, very_recom, spec_prior, priority, not_recom}
-@inputs Parents, Has_nurs, Form, Children, Housing, Finance, Social, Health
-@outputs Class
-@data
+Parents,Has_nurs,Form,Children,Housing,Finance,Social,Health,Class
 usual, proper, complete, 1, convenient, convenient, nonprob, recommended, recommend
 usual, proper, complete, 1, convenient, convenient, nonprob, not_recom, not_recom
 usual, proper, complete, 1, convenient, convenient, slightly_prob, priority, priority
