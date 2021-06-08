@@ -15,6 +15,7 @@ import pandas as pd
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from scipy.stats import rankdata
+import math
 
 class BaggingEnsembleModel(BaseEnsemble, ClassifierMixin):
 
@@ -282,9 +283,11 @@ class RandomSubspaceEnsembleModel(BaseEnsemble, ClassifierMixin):
 
 
 #MAIN EXPERIMENT
-dataset = 'credit_risk/original.csv'
+dataset = 'telescope/magic.csv'
 dataset = np.genfromtxt("datasets/%s" % (dataset), delimiter=",")
+dataset[~np.isnan(dataset).any(axis=1), :]
 X = dataset[1:, :-1]
+X = np.nan_to_num(X)
 y = dataset[1:, -1].astype(int)
 
 n_splits = 2
@@ -311,7 +314,7 @@ for ensemble_method in range(len(ensemble_methods)):
 
                 clf = 0
                 if ensemble_methods[ensemble_method] == "RandomSubspace":
-                    clf = RandomSubspaceEnsembleModel(base_estimator=base_estimators[base], n_estimators=number, n_subspace_features=1, voting=combination_methods[combination], random_state=123)
+                    clf = RandomSubspaceEnsembleModel(base_estimator=base_estimators[base], n_estimators=number, n_subspace_features=math.floor(X.shape[1]/2), voting=combination_methods[combination], random_state=123)
                 elif ensemble_methods[ensemble_method] == "Bagging":
                     clf = BaggingEnsembleModel(base_estimator=base_estimators[base], n_estimators=number, voting=combination_methods[combination], random_state=123)
                 elif ensemble_methods[ensemble_method] == "Adaboost":
@@ -333,7 +336,7 @@ for ensemble_method in range(len(ensemble_methods)):
                             wilcoxonAdaboost[len(base_estimators)*base+combination, fold_id] = accuracy_score(y[test], y_pred)
 
                     scores.append([accuracy_score(y[test], y_pred), 
-                                recall_score(y[test], y_pred),
+                                recall_score(y[test], y_pred, average='weighted'),
                                 precision_score(y[test], y_pred, average='weighted', labels=np.unique(y_pred))])
                 print(f"{str(ensemble_methods[ensemble_method])}, {str(base_estimators[base])}, {str(number)}, {str(combination_methods[combination])}"+" = Accuracy score: %.3f (%.3f)" % (
                     np.mean(scores, axis=0)[0], np.std(scores, axis=0)[0]))
