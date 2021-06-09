@@ -283,7 +283,7 @@ class RandomSubspaceEnsembleModel(BaseEnsemble, ClassifierMixin):
 
 
 #MAIN EXPERIMENT
-dataset = 'telescope/magic.csv'
+dataset = 'usstocks/2014/2014_Financial_Data.csv'
 dataset = np.genfromtxt("datasets/%s" % (dataset), delimiter=",")
 dataset[~np.isnan(dataset).any(axis=1), :]
 X = dataset[1:, :-1]
