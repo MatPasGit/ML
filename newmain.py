@@ -283,11 +283,16 @@ class RandomSubspaceEnsembleModel(BaseEnsemble, ClassifierMixin):
 
 
 #MAIN EXPERIMENT
-dataset = 'wine/winequality-red.csv'
+dataset = 'binary/data.csv'
+print("elo")
 dataset = np.genfromtxt("datasets/%s" % (dataset), delimiter=",")
+print("elo")
 dataset[~np.isnan(dataset).any(axis=1), :]
+print("elo")
 X = dataset[1:, :-1]
+print("elo")
 X = np.nan_to_num(X)
+print("elo")
 y = dataset[1:, -1].astype(int)
 
 n_splits = 2
@@ -371,4 +376,4 @@ test_results = test_results.sort_values(by=['accuracy'])
 test_results_csv = test_results[['Ensemble method', 'Model', 'Number of classificators', 'Voting',
                                  'accuracy', 'accuracy std', 'recall', 'recall std', 'precision', 'precision std']]
 print(test_results_csv)
-test_results_csv.to_csv(r'.\test_results.csv', index = False, header=True)
+test_results_csv.to_csv(r'test_results.csv', index = False, header=True)
