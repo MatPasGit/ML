@@ -1,0 +1,147 @@
+Random Subspace ranks
+Ranks:
+ [[1.  3.  2. ]
+ [1.5 1.5 3. ]
+ [2.5 2.5 1. ]
+ [2.  3.  1. ]
+ [1.5 1.5 3. ]
+ [3.  2.  1. ]
+ [2.  1.  3. ]
+ [1.  2.  3. ]
+ [1.  3.  2. ]
+ [2.  3.  1. ]
+ [2.  2.  2. ]
+ [2.  3.  1. ]
+ [2.  3.  1. ]
+ [3.  2.  1. ]
+ [3.  1.  2. ]
+ [1.5 1.5 3. ]
+ [2.  2.  2. ]
+ [1.5 1.5 3. ]
+ [2.  1.  3. ]
+ [1.5 1.5 3. ]
+ [2.  2.  2. ]]
+Mean ranks:
+ [1.9047619  2.04761905 2.04761905]
+w-statistic:
+                Gaus-major    Gaus-vect    Gaus-weight
+-----------  ------------  -----------  -------------
+Gaus-major           0.00        -0.53          -0.53
+Gaus-vect            0.53         0.00           0.00
+Gaus-weight          0.53         0.00           0.00
+p-value:
+                Gaus-major    Gaus-vect    Gaus-weight
+-----------  ------------  -----------  -------------
+Gaus-major           1.00         0.60           0.60
+Gaus-vect            0.60         1.00           1.00
+Gaus-weight          0.60         1.00           1.00
+Advantage:
+                Gaus-major    Gaus-vect    Gaus-weight
+-----------  ------------  -----------  -------------
+Gaus-major              0            0              0
+Gaus-vect               1            0              0
+Gaus-weight             1            0              0
+Statistical significance (alpha = 0.05):
+                Gaus-major    Gaus-vect    Gaus-weight
+-----------  ------------  -----------  -------------
+Gaus-major              0            0              0
+Gaus-vect               0            0              0
+Gaus-weight             0            0              0
+Bagging ranks
+Ranks:
+ [[1.5 1.5 3. ]
+ [2.  2.  2. ]
+ [2.5 2.5 1. ]
+ [2.  3.  1. ]
+ [2.  2.  2. ]
+ [2.5 2.5 1. ]
+ [2.5 2.5 1. ]
+ [2.  3.  1. ]
+ [1.  3.  2. ]
+ [1.5 1.5 3. ]
+ [2.  2.  2. ]
+ [2.  1.  3. ]
+ [3.  2.  1. ]
+ [2.5 2.5 1. ]
+ [2.5 2.5 1. ]
+ [2.5 2.5 1. ]
+ [2.  2.  2. ]
+ [2.  2.  2. ]
+ [2.5 2.5 1. ]
+ [1.5 1.5 3. ]
+ [2.  2.  2. ]]
+Mean ranks:
+ [2.0952381  2.19047619 1.71428571]
+w-statistic:
+                Gaus-major    Gaus-vect    Gaus-weight
+-----------  ------------  -----------  -------------
+Gaus-major           0.00        -0.60           1.86
+Gaus-vect            0.60         0.00           2.14
+Gaus-weight         -1.86        -2.14           0.00
+p-value:
+                Gaus-major    Gaus-vect    Gaus-weight
+-----------  ------------  -----------  -------------
+Gaus-major           1.00         0.55           0.06
+Gaus-vect            0.55         1.00           0.03
+Gaus-weight          0.06         0.03           1.00
+Advantage:
+                Gaus-major    Gaus-vect    Gaus-weight
+-----------  ------------  -----------  -------------
+Gaus-major              0            0              1
+Gaus-vect               1            0              1
+Gaus-weight             0            0              0
+Statistical significance (alpha = 0.05):
+                Gaus-major    Gaus-vect    Gaus-weight
+-----------  ------------  -----------  -------------
+Gaus-major              0            0              0
+Gaus-vect               0            0              1
+Gaus-weight             0            1              0
+Adaboost ranks
+Ranks:
+ [[1.5 1.5 3. ]
+ [2.  2.  2. ]
+ [2.5 2.5 1. ]
+ [1.  2.  3. ]
+ [2.  2.  2. ]
+ [1.5 1.5 3. ]
+ [2.5 2.5 1. ]
+ [2.5 2.5 1. ]
+ [3.  2.  1. ]
+ [3.  1.  2. ]
+ [2.  2.  2. ]
+ [2.  2.  2. ]
+ [2.  3.  1. ]
+ [2.5 2.5 1. ]
+ [2.5 2.5 1. ]
+ [2.5 2.5 1. ]
+ [2.  2.  2. ]
+ [2.  2.  2. ]
+ [2.  2.  2. ]
+ [2.  2.  2. ]
+ [2.  2.  2. ]]
+Mean ranks:
+ [2.14285714 2.0952381  1.76190476]
+w-statistic:
+                Gaus-major    Gaus-vect    Gaus-weight
+-----------  ------------  -----------  -------------
+Gaus-major           0.00         0.30           1.92
+Gaus-vect           -0.30         0.00           1.76
+Gaus-weight         -1.92        -1.76           0.00
+p-value:
+                Gaus-major    Gaus-vect    Gaus-weight
+-----------  ------------  -----------  -------------
+Gaus-major           1.00         0.76           0.05
+Gaus-vect            0.76         1.00           0.08
+Gaus-weight          0.05         0.08           1.00
+Advantage:
+                Gaus-major    Gaus-vect    Gaus-weight
+-----------  ------------  -----------  -------------
+Gaus-major              0            1              1
+Gaus-vect               0            0              1
+Gaus-weight             0            0              0
+Statistical significance (alpha = 0.05):
+                Gaus-major    Gaus-vect    Gaus-weight
+-----------  ------------  -----------  -------------
+Gaus-major              0            0              0
+Gaus-vect               0            0              0
+Gaus-weight             0            0              0
